@@ -5,7 +5,7 @@ import Select from "react-select";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { GlobeIcon } from "@heroicons/react/solid";
-// option type
+
 type option = {
   value: {
     latitude: string;
