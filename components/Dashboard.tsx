@@ -2,9 +2,10 @@ import React from "react";
 import { Text, Subtitle } from "@tremor/react";
 import CalloutCard from "./CalloutCard";
 import StatCard from "./StatCard";
+import TemperatureChart from "./TemperatureChart";
 
 type Props = {
-  result: Weather | null;
+  result: Weather;
 };
 
 function Dashboard({ result }: Props) {
@@ -59,7 +60,8 @@ function Dashboard({ result }: Props) {
       <hr className="mb-5" />
       <div className="space-y-4">
         {/* Temp Chart */}
-        
+        <TemperatureChart result={result} />
+
         {/* Rain Chart */}
         {/* Humidity Chart*/}
       </div>
