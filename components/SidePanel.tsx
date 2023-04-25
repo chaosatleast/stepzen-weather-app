@@ -3,36 +3,62 @@ import CityPicker from "./CityPicker";
 import { Card, Divider, Subtitle, Text } from "@tremor/react";
 import { MoonIcon, SunIcon } from "@heroicons/react/solid";
 
-function SidePanel() {
+type Props = {
+  result: Weather;
+  city: string;
+  lat: string;
+  long: string;
+};
+function SidePanel({ result, city, lat, long }: Props) {
   return (
-    <div className="w-80 p-5 h-screen bg-gradient-to-br from-[#394F68] to-[#183B7E]">
-      {/* City Name */}
-      <Text className="text-4xl text-white font-bold">Alfou</Text>
-      {/* LongLat */}
-      <Subtitle className="text-sm">
-        Long/Lat :2.102319237, 34.6129381638
-      </Subtitle>
+    <div className="w-full xl:w-80 p-10 h-screen  text-white bg-gradient-to-br from-[#394F68] to-[#183B7E]">
+      <div className="pb-5">
+        {/* City Name */}
+        <h1 className="text-6xl font-bold">{decodeURI(city)}</h1>
+        {/* LongLat */}
+        <p className="text-xs text-gray-400">
+          Long/Lat :{long}, {lat}
+        </p>
+      </div>
 
       <CityPicker />
 
-      <Divider className="px-3 bg-gray-400" />
+      <hr className="my-10" />
       {/* Date, Time and Timezone */}
       <div className="flex justify-between items-center">
         <div className="flex flex-col">
-          <Text className="text-lg text-white">Friday, 21 April 2023</Text>
-          <Subtitle>Timezone: Asia/Dubai</Subtitle>
+          <p className="text-xl">
+            {new Date().toLocaleDateString("en-GB", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
+          <p className="font-extralight">
+            Timezone:{" "}
+            {Intl.DateTimeFormat().resolvedOptions().timeZone.replace("_", " ")}
+          </p>
         </div>
         <div className="">
-          <Text className="text-lg font-bold text-white">2:36PM</Text>
+          <p className="text-xl font-bold uppercase ">
+            {new Date().toLocaleTimeString("en-GB", {
+              hour: "numeric",
+              minute: "numeric",
+              hour12: true,
+            })}
+          </p>
         </div>
       </div>
-      <Divider className="px-3  bg-gray-400" />
+      <hr className="my-10" />
       {/* Day/Night Icon */}
       <div className="h-12 w-12 bg-yellow-300 rounded-full"></div>
       {/* Temperature and description */}
       <div className="flex justify-between items-center py-2">
-        <Text className="text-4xl text-white font-semibold">17.9 &#8451;</Text>
-        <Text className="text-md text-white font-thin">Clear sky</Text>
+        <p className="text-4xl  font-semibold">
+          {result?.current_weather.temperature.toFixed(1)} &#8451;
+        </p>
+        <Text className="text-md  font-thin">Clear sky</Text>
       </div>
       {/* Sunrise and Sunset */}
       <div className="flex flex-col space-y-2">

@@ -12,31 +12,27 @@ type Props = {
 };
 
 async function WeatherPage({ params: { city, lat, long } }: Props) {
-  // const client = getClient();
+  const client = getClient();
 
-  // const { data } = await client.query({
-  //   query: fetchWeatherQuery,
-  //   variables: {
-  //     current_weather: "true",
-  //     longitude: long,
-  //     latitude: lat,
-  //     timezone: "GMT",
-  //   },
-  // });
+  const { data } = await client.query({
+    query: fetchWeatherQuery,
+    variables: {
+      current_weather: "true",
+      longitude: long,
+      latitude: lat,
+      timezone: "GMT",
+    },
+  });
 
-  // console.log(data);
+  console.log(data);
 
-  // const result: Weather = data?.weatherQuery;
+  const result: Weather = data?.weatherQuery;
 
   return (
-    <div className="flex ">
-      {/* Side Panel */}
-      <div className="">
-        <SidePanel />
-      </div>
-      {/* Content */}
-      <div className="p-5 lg:flex-1">
-        <Dashboard result={null} />
+    <div className="xl:flex">
+      <SidePanel result={result} city={city} lat={lat} long={long} />
+      <div className="xl:m-5 flex-1">
+        <Dashboard result={result} />
       </div>
     </div>
   );

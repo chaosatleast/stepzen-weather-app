@@ -12,11 +12,11 @@ interface Daily {
   apparent_temperature_min: number;
   sunrise: string;
   sunset: string;
-  temperature_2m_max: number;
-  temperature_2m_min: number;
+  temperature_2m_max: number[];
+  temperature_2m_min: number[];
   time: string;
-  uv_index_clear_sky_max: number;
-  uv_index_max: number;
+  uv_index_clear_sky_max: number[];
+  uv_index_max: number[];
   weathercode: number;
 }
 
