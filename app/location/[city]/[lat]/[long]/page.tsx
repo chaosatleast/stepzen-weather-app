@@ -29,9 +29,9 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
   const result: Weather = data?.weatherQuery;
 
   return (
-    <div className="xl:flex">
+    <div className="flex flex-col min-h-screen xl:flex-row">
       <SidePanel result={result} city={city} lat={lat} long={long} />
-      <div className="xl:m-5 flex-1">
+      <div className="flex-1 p-5 xl:p-10">
         <Dashboard result={result} />
       </div>
     </div>
