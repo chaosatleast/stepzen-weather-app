@@ -6,7 +6,7 @@ import React from "react";
 
 type Props = {
   message: string;
-  warning: boolean;
+  warning?: boolean;
 };
 
 function CalloutCard({ message, warning }: Props) {

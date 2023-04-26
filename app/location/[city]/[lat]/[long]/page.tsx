@@ -3,6 +3,8 @@ import Dashboard from "@/components/Dashboard";
 import React from "react";
 import { getClient } from "@/apollo-client";
 import fetchWeatherQuery from "@/graphQL/fetchWeatherQuery";
+import cleanData from "@/helper/cleanData";
+import getHostPath from "@/helper/getHostPath";
 type Props = {
   params: {
     city: string;
@@ -10,6 +12,8 @@ type Props = {
     long: string;
   };
 };
+
+export const revalidate = 60;
 
 async function WeatherPage({ params: { city, lat, long } }: Props) {
   const client = getClient();
@@ -24,9 +28,23 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
     },
   });
 
-  console.log(data);
-
   const result: Weather = data?.weatherQuery;
+
+  const gptData = cleanData(result, city);
+
+  // gpt response api
+
+  // const gptResponse = await fetch(`${getHostPath()}/api/getWeatherSummary`, {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify({ weatherData: gptData }),
+  // });
+
+  // const gptSummary = await gptResponse.json();
+
+  // const { content } = gptSummary;
 
   return (
     <div className="flex flex-col min-h-screen xl:flex-row">

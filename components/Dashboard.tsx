@@ -8,9 +8,10 @@ import HumidityChart from "./HumidityChart";
 
 type Props = {
   result: Weather;
+  gptSummary?: string;
 };
 
-function Dashboard({ result }: Props) {
+function Dashboard({ result, gptSummary }: Props) {
   return (
     <div>
       <h2 className="text-xl font-bold">Today Overview</h2>
@@ -20,7 +21,7 @@ function Dashboard({ result }: Props) {
         {result?.timezone}) */}
       </p>
       <div className="m-2 mb-8">
-        <CalloutCard warning message="This where gpt summary will pop" />
+        {/* <CalloutCard message={gptSummary} /> */}
       </div>
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 m-2">
         <StatCard

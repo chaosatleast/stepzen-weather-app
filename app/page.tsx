@@ -5,7 +5,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#394F68] to-[#183B7E] px-10 flex flex-col justify-center items-center">
       <Card className="">
-        <Text className="text-6xl text-center font-bold mb-10">Weather AI</Text>
+        <Text className="text-6xl text-center font-bold mb-10">
+          Weather APP
+        </Text>
         <Subtitle className="text-xl text-center">
           Powered by Next.js@13.3 , OpenAI, Stepzen and Tailwind CSS.
         </Subtitle>
