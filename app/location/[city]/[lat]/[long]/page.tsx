@@ -48,8 +48,10 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
 
   return (
     <div className="flex flex-col min-h-screen xl:flex-row">
-      <SidePanel result={result} city={city} lat={lat} long={long} />
-      <div className="flex-1 p-5 xl:p-10">
+      <div className="w-full xl:fixed xl:left-0 xl:top-0 xl:w-80">
+        <SidePanel result={result} city={city} lat={lat} long={long} />
+      </div>
+      <div className="flex-1 p-5 ml-0 xl:p-10 xl:ml-80">
         <Dashboard result={result} />
       </div>
     </div>

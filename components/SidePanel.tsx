@@ -13,7 +13,7 @@ type Props = {
 };
 function SidePanel({ result, city, lat, long }: Props) {
   return (
-    <div className="min-h-screen p-10 text-white bg-gradient-to-br from-[#394F68] to-[#183B7E]">
+    <div className="h-screen p-10 text-white bg-gradient-to-br from-[#394F68] to-[#183B7E]">
       <div className="pb-5 space-y-2">
         {/* City Name */}
         <h1 className="text-6xl font-bold">{decodeURI(city)}</h1>
@@ -69,7 +69,7 @@ function SidePanel({ result, city, lat, long }: Props) {
           />
           {/* Temperature and description */}
           <div className="flex justify-between items-center space-x-10">
-            <p className="text-6xl font-semibold">
+            <p className="text-4xl font-semibold">
               {result?.current_weather.temperature.toFixed(1)} &#8451;
             </p>
             <p className="text-sm text-right font-extralight">

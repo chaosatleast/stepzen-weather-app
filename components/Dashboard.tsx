@@ -13,12 +13,12 @@ type Props = {
 
 function Dashboard({ result, gptSummary }: Props) {
   return (
-    <div>
+    <div className="ml-2/5">
       <h2 className="text-xl font-bold">Today Overview</h2>
       <p className="text-sm text-gray-400">
         Last Updated at:{" "}
-        {/* {new Date(result?.current_weather?.time).toLocaleString()}(
-        {result?.timezone}) */}
+        {new Date(result?.current_weather?.time).toLocaleString()}(
+        {result?.timezone})
       </p>
       <div className="m-2 mb-8">
         {/* <CalloutCard message={gptSummary} /> */}
