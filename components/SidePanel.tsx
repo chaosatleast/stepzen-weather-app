@@ -13,7 +13,7 @@ type Props = {
 };
 function SidePanel({ result, city, lat, long }: Props) {
   return (
-    <div className="h-screen p-10 text-white bg-gradient-to-br from-[#394F68] to-[#183B7E]">
+    <div className="h-fit p-10 text-white bg-gradient-to-br from-[#394F68] to-[#183B7E] xl:h-screen">
       <div className="pb-5 space-y-2">
         {/* City Name */}
         <h1 className="text-6xl font-bold">{decodeURI(city)}</h1>
