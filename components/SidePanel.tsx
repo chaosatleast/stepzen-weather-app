@@ -2,8 +2,6 @@ import weatherCodeToString from "@/helper/weatherCodeToIconAndStr";
 import { MoonIcon, SunIcon } from "@heroicons/react/solid";
 import Image from "next/image";
 import CityPicker from "./CityPicker";
-import { convertDateToTimezone } from "@/helper/dateConversion";
-import dayjs from "dayjs";
 
 type Props = {
   result: Weather;
@@ -19,16 +17,9 @@ function SidePanel({ result, city, lat, long }: Props) {
     let sunset = new Date(result.daily.sunset[0]).valueOf();
     let sunrise = new Date(result.daily.sunrise[0]).valueOf();
 
-    if (result.utc_offset_seconds < 0) {
-      current = current - Math.abs(result.utc_offset_seconds * 1000);
-      sunrise = sunrise - Math.abs(result.utc_offset_seconds * 1000);
-      sunset = sunset - Math.abs(result.utc_offset_seconds * 1000);
-      console.log(current - sunrise);
-    } else {
-      current = current + Math.abs(result.utc_offset_seconds * 1000);
-      sunrise = sunrise + Math.abs(result.utc_offset_seconds * 1000);
-      sunset = sunset + Math.abs(result.utc_offset_seconds * 1000);
-    }
+    current = current + result.utc_offset_seconds * 1000;
+    sunrise = sunrise + result.utc_offset_seconds * 1000;
+    sunset = sunset + result.utc_offset_seconds * 1000;
 
     const factor = 30;
 
@@ -39,12 +30,18 @@ function SidePanel({ result, city, lat, long }: Props) {
     const sunriseEnd = sunrise + Math.floor(factor * 60 * 1000);
 
     if (current >= sunriseStart && current <= sunriseEnd) {
+      console.log("sunrise");
       return `var(--sunrise-gradient)`;
     } else if (current > sunriseEnd && current < sunsetStart) {
+      console.log("day");
       return `var(--daytime-gradient)`;
     } else if (current >= sunsetStart && current <= sunsetEnd) {
+      console.log("sunset");
       return `var(--sunset-gradient)`;
     } else if (current > sunsetEnd) {
+      console.log("night");
+      return `var(--nighttime-gradient)`;
+    } else {
       return `var(--nighttime-gradient)`;
     }
   };
@@ -121,16 +118,29 @@ function SidePanel({ result, city, lat, long }: Props) {
         </div>
         <div>
           {/* Day/Night Icon */}
-          <Image
-            src={`https://www.weatherbit.io/static/img/icons/${
-              weatherCodeToString[result.current.weather_code].iconDay
-            }.png`}
-            alt={weatherCodeToString[result.current.weather_code].description}
-            objectFit="fit"
-            height={70}
-            width={70}
-            quality={100}
-          />
+          {result.current.is_day ? (
+            <Image
+              src={`https://www.weatherbit.io/static/img/icons/${
+                weatherCodeToString[result.current.weather_code].iconDay
+              }.png`}
+              alt={weatherCodeToString[result.current.weather_code].description}
+              objectFit="fit"
+              height={70}
+              width={70}
+              quality={100}
+            />
+          ) : (
+            <Image
+              src={`https://www.weatherbit.io/static/img/icons/${
+                weatherCodeToString[result.current.weather_code].iconNight
+              }.png`}
+              alt={weatherCodeToString[result.current.weather_code].description}
+              objectFit="fit"
+              height={70}
+              width={70}
+              quality={100}
+            />
+          )}
         </div>
       </div>
       {/* Sunrise and Sunset */}

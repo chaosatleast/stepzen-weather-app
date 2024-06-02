@@ -3,7 +3,7 @@ import React from "react";
 function CalloutCard({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="h-auto  w-aut0 p-4 "
+      className="h-auto  w-aut0 p-4 overflow-hidden "
       style={{
         background:
           "linear-gradient(45deg, rgba( 255, 255, 255, 0) 10%, rgba( 255, 255, 255, 0.1) 90%)",

@@ -1,22 +1,12 @@
 "use client";
-import React, { useState } from "react";
-import {
-  Pagination,
-  PaginationItem,
-  PaginationCursor,
-} from "@nextui-org/pagination";
 import { Progress } from "@nextui-org/progress";
-import { CgCompressV } from "react-icons/cg";
-import { FaArrowUp, FaRegSun, FaTemperatureHigh, FaWind } from "react-icons/fa";
+import { useState } from "react";
+import { FaRegSun, FaTemperatureHigh } from "react-icons/fa";
 import { IoIosWarning, IoMdSunny } from "react-icons/io";
 import { IoUmbrellaSharp } from "react-icons/io5";
-import { MdDewPoint, MdVisibility } from "react-icons/md";
-import { RiWaterPercentFill } from "react-icons/ri";
-import { TbUvIndex } from "react-icons/tb";
 
-import CalloutCard from "./CalloutCard";
 import { FaCircleChevronLeft } from "react-icons/fa6";
-import { ChevronLeftIcon } from "@heroicons/react/solid";
+import CalloutCard from "./CalloutCard";
 
 type PaginationSummaryProps = {
   result: Weather;
@@ -29,15 +19,13 @@ export default function PaginationSummary({
 }: PaginationSummaryProps) {
   const hourly24 = result.hourly.time.slice(0, 24);
   const precipitation24 = result.hourly.precipitation.slice(0, 24);
+  let current = new Date(result.current.time).valueOf();
+  current = current + result.utc_offset_seconds * 1000;
 
   const findTimeSpecificDataIndex = () => {
-    let current = new Date(result.current.time).valueOf();
-    current = current - Math.abs(result.utc_offset_seconds * 1000);
-
     const item = hourly24.filter((elem: any) => {
       let elemHr = new Date(elem).valueOf();
-      elemHr = elemHr - Math.abs(result.utc_offset_seconds * 1000);
-
+      elemHr = elemHr + result.utc_offset_seconds * 1000;
       return current >= elemHr && elemHr <= current;
     });
     // last items is the nearest to current time
@@ -83,23 +71,25 @@ export default function PaginationSummary({
       display: true,
       id: 1,
       value: (
-        <div className="flex justify-between items-center">
-          <div className="flex flex-col gap-y-2 pb-2 ">
-            <span className="flex items-center gap-x-1 text-sm text-gray-400">
-              <FaTemperatureHigh /> Today's Feels Like Temperature
-            </span>
-            <>
-              <span className="font-semibold text-md">
-                Humidity will make high feel like{" "}
-                {result.current.apparent_temperature.toFixed(0)}{" "}
-                {result.current_units.apparent_temperature}
+        <>
+          <div className="flex justify-between items-center">
+            <div className="flex flex-col gap-y-2 pb-2">
+              <span className="flex items-center gap-x-1 text-sm text-gray-400">
+                <FaTemperatureHigh /> Today's Feels Like Temperature
               </span>
-            </>
+              <>
+                <span className="font-semibold text-md">
+                  Humidity will make high feel like{" "}
+                  {result.current.apparent_temperature.toFixed(0)}{" "}
+                  {result.current_units.apparent_temperature}
+                </span>
+              </>
+            </div>
+            <span className="font-semibold text-2xl">
+              {result.current.apparent_temperature.toFixed(0)} °
+            </span>
           </div>
-          <span className="font-semibold text-2xl">
-            {result.current.apparent_temperature.toFixed(0)} °
-          </span>
-        </div>
+        </>
       ),
     },
     {

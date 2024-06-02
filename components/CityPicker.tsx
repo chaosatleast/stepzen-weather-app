@@ -1,11 +1,9 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { GlobeIcon } from "@heroicons/react/solid";
-
+import { useEffect, useRef, useState } from "react";
+import { useCityPickerStore } from "@/utils/stores/cityPickerSrore";
 import { createClient } from "@/utils/superbase/client";
 import { Autocomplete, AutocompleteItem } from "@nextui-org/autocomplete";
-import { useCityPickerStore } from "@/utils/stores/cityPickerSrore";
 
 async function getAllCountries<T>() {
   const supabase = createClient();

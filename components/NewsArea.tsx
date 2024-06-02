@@ -1,6 +1,3 @@
-import { PhotographIcon } from "@heroicons/react/solid";
-import { Card } from "@tremor/react";
-
 function NewsArea() {
   return (
     <div className="flex max-w-full space-x-5">

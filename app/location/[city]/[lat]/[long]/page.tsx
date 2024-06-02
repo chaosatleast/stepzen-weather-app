@@ -1,18 +1,17 @@
 import { getClient } from "@/apollo-client";
 import CalloutCard from "@/components/CalloutCard";
-import SidePanel from "@/components/SidePanel";
+import DailyInfo from "@/components/DailyInfo";
+import HourlyInfo from "@/components/HourlyInfo";
 import NewsArea from "@/components/NewsArea";
+import PaginationSummary from "@/components/PaginationSummary";
+import SidePanel from "@/components/SidePanel";
 import fetchAirQualityIndexQuery from "@/graphQL/fetchAirQualityIndexQuery";
 import fetchWeatherQuery from "@/graphQL/fetchWeatherQuery";
-import { Progress } from "@nextui-org/progress";
 import { CgCompressV } from "react-icons/cg";
-import { FaArrowUp, FaRegSun, FaTemperatureHigh, FaWind } from "react-icons/fa";
-import { IoIosWarning, IoMdSunny } from "react-icons/io";
-import { IoUmbrellaSharp } from "react-icons/io5";
+import { FaArrowUp, FaWind } from "react-icons/fa";
 import { MdDewPoint, MdVisibility } from "react-icons/md";
 import { RiWaterPercentFill } from "react-icons/ri";
 import { TbUvIndex } from "react-icons/tb";
-import PaginationSummary from "@/components/PaginationSummary";
 type Props = {
   params: {
     city: string;
@@ -81,11 +80,11 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
 
   const findTimeSpecificDataIndex = () => {
     let current = new Date(result.current.time).valueOf();
-    current = current - Math.abs(result.utc_offset_seconds * 1000);
+    current = current + result.utc_offset_seconds * 1000;
 
     const item = hourly24.filter((elem: any) => {
       let elemHr = new Date(elem).valueOf();
-      elemHr = elemHr - Math.abs(result.utc_offset_seconds * 1000);
+      elemHr = elemHr + result.utc_offset_seconds * 1000;
 
       return current >= elemHr && elemHr <= current;
     });
@@ -94,38 +93,6 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
   };
 
   const index = findTimeSpecificDataIndex();
-
-  const findRainingStopTime = () => {
-    let rid = index;
-    const rainStop = precipitation24
-      .map((elem: any, index: number) => {
-        if (index > rid && elem == 0) {
-          return index;
-        }
-      })
-      .filter((elem: any) => elem);
-
-    return rainStop[0];
-  };
-
-  const findRainingStartTime = () => {
-    let rid = index;
-
-    const rainStart = precipitation24
-      .map((elem: any, index: number) => {
-        if (index > rid && elem > 0) {
-          return index;
-        }
-      })
-      .filter((elem: any) => elem);
-    return rainStart[0];
-  };
-
-  const isSunnyDay = () => {
-    const precipitate = precipitation24.filter((elem: any) => elem > 0);
-    if (precipitate.length > 0) return false;
-    else return true;
-  };
 
   return (
     <div className="flex flex-col bg-fixed max-w-screen  min-h-screen xl:flex-row xl:relative  ">
@@ -138,11 +105,8 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
       >
         <div className="min-h-screen text-gray-100">
           <div className="flex flex-col min-h-screen">
-            <div className="flex-1 overflow-x-scroll">
-              <h1 className="text-2xl font-bold pb-5">Top News</h1>
-              <NewsArea />
-            </div>
-            <div className="flex-none ">
+            {/* Weather Overview */}
+            <div className="flex-none">
               <h2 className="text-2xl font-bold pt-5">Weather Overview</h2>
               <p className="text-sm text-gray-400">
                 Last Updated at:{" "}
@@ -253,6 +217,24 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
                   </div>
                 </CalloutCard>
               </div>
+            </div>
+
+            {/* Hourly Info */}
+            <HourlyInfo
+              data={result.hourly}
+              utcOffsetSec={result.utc_offset_seconds}
+              timezone={result.timezone}
+              sunrise={result.daily.sunrise[0]}
+              sunset={result.daily.sunset[0]}
+            />
+
+            {/* Daily Info */}
+            <DailyInfo data={result.daily} />
+
+            {/* News  */}
+            <div className="flex-1 overflow-x-scroll">
+              <h1 className="text-2xl font-bold pb-5">Top News</h1>
+              <NewsArea />
             </div>
           </div>
         </div>
