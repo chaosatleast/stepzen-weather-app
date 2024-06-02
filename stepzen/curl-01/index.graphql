@@ -1,0 +1,37 @@
+type CurrentAQI {
+  dust: Int
+  european_aqi: Int
+  interval: Int
+  time: String
+  us_aqi: Int
+}
+
+type CurrentUnitsAQI {
+  dust: String
+  european_aqi: String
+  interval: String
+  time: String
+  us_aqi: String
+}
+
+type RootAQI {
+  current: CurrentAQI
+  current_units: CurrentUnitsAQI
+  elevation: Int
+  generationtime_ms: Float
+  latitude: Float
+  longitude: Float
+  timezone: String
+  timezone_abbreviation: String
+  utc_offset_seconds: Int
+}
+
+type Query {
+  aqiQuery(
+    current: String
+    latitude: String
+    longitude: String
+    timezone: String
+  ): RootAQI
+    @rest(endpoint: "https://air-quality-api.open-meteo.com/v1/air-quality")
+}

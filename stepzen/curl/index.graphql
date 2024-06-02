@@ -1,14 +1,46 @@
-type CurrentWeather {
+type Current {
+  apparent_temperature: Float
+  interval: Int
   is_day: Int
-  temperature: Int
+  precipitation: Int
+  rain: Int
+  relative_humidity_2m: Int
+  showers: Int
+  snowfall: Int
+  surface_pressure: Int
+  temperature_2m: Float
   time: String
-  weathercode: Int
-  winddirection: Int
-  windspeed: Float
+  weather_code: Int
+  wind_direction_10m: Int
+  wind_speed_10m: Float
 }
+
+type CurrentUnits {
+  apparent_temperature: String
+  interval: String
+  is_day: String
+  precipitation: String
+  rain: String
+  relative_humidity_2m: String
+  showers: String
+  snowfall: String
+  surface_pressure: String
+  temperature_2m: String
+  time: String
+  weather_code: String
+  wind_direction_10m: String
+  wind_speed_10m: String
+}
+
 type Daily {
   apparent_temperature_max: [Float]
   apparent_temperature_min: [Float]
+  precipitation_hours: [Int]
+  precipitation_probability_max: [Int]
+  precipitation_sum: [Float]
+  rain_sum: [Float]
+  showers_sum: [Float]
+  snowfall_sum: [Int]
   sunrise: [String]
   sunset: [String]
   temperature_2m_max: [Float]
@@ -16,11 +48,18 @@ type Daily {
   time: [String]
   uv_index_clear_sky_max: [Float]
   uv_index_max: [Float]
-  weathercode: [Int]
+  weather_code: [Int]
 }
+
 type DailyUnits {
   apparent_temperature_max: String
   apparent_temperature_min: String
+  precipitation_hours: String
+  precipitation_probability_max: String
+  precipitation_sum: String
+  rain_sum: String
+  showers_sum: String
+  snowfall_sum: String
   sunrise: String
   sunset: String
   temperature_2m_max: String
@@ -28,42 +67,46 @@ type DailyUnits {
   time: String
   uv_index_clear_sky_max: String
   uv_index_max: String
-  weathercode: String
+  weather_code: String
 }
+
 type Hourly {
   apparent_temperature: [Float]
+  dew_point_2m: [Float]
   precipitation: [Float]
   precipitation_probability: [Int]
-  rain: [Int]
-  relativehumidity_2m: [Int]
+  rain: [Float]
+  relative_humidity_2m: [Int]
   showers: [Float]
   snow_depth: [Int]
   snowfall: [Int]
+  surface_pressure: [Float]
   temperature_2m: [Float]
   time: [String]
-  uv_index: [Float]
-  uv_index_clear_sky: [Float]
-  windgusts_10m: [Float]
-  windspeed_10m: [Float]
+  visibility: [Int]
+  weather_code: [Int]
 }
+
 type HourlyUnits {
   apparent_temperature: String
+  dew_point_2m: String
   precipitation: String
   precipitation_probability: String
   rain: String
-  relativehumidity_2m: String
+  relative_humidity_2m: String
   showers: String
   snow_depth: String
   snowfall: String
+  surface_pressure: String
   temperature_2m: String
   time: String
-  uv_index: String
-  uv_index_clear_sky: String
-  windgusts_10m: String
-  windspeed_10m: String
+  visibility: String
+  weather_code: String
 }
-type Weather {
-  current_weather: CurrentWeather
+
+type Root {
+  current: Current
+  current_units: CurrentUnits
   daily: Daily
   daily_units: DailyUnits
   elevation: Int
@@ -79,11 +122,11 @@ type Weather {
 
 type Query {
   weatherQuery(
-    current_weather: String
+    current: String
     daily: String
     hourly: String
     latitude: String
     longitude: String
     timezone: String
-  ): Weather @rest(endpoint: "https://api.open-meteo.com/v1/forecast")
+  ): Root @rest(endpoint: "https://api.open-meteo.com/v1/forecast")
 }

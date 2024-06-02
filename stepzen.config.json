@@ -1,0 +1,4 @@
+{
+  "endpoint": "api/tinseled-butterfly",
+  "root": "stepzen/curl"
+}

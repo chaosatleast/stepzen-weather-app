@@ -1,8 +1,10 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 
-const url = process.env.API_URL;
+const url = process.env.STEPZEN_API_URL;
 
 const apikey = process.env.STEPZEN_API_KEY;
+
+console.log(url, apikey);
 
 export const getClient = () => {
   const client = new ApolloClient({
@@ -13,5 +15,6 @@ export const getClient = () => {
     },
   });
 
+  console.log(client);
   return client;
 };
