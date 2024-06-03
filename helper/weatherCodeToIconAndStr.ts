@@ -235,6 +235,11 @@ const weatherCodeToString: {
     iconNight: "a06n",
     description: "Freezing Fog",
   },
+  45: {
+    iconDay: "a06d",
+    iconNight: "a06n",
+    description: "Freezing Fog",
+  },
   47: {
     iconDay: "a06d",
     iconNight: "a06n",
