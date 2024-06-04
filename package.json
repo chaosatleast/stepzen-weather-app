@@ -12,6 +12,8 @@
     "@apollo/client": "^3.7.12",
     "@heroicons/react": "^1.0.6",
     "@nextui-org/autocomplete": "^2.1.1",
+    "@nextui-org/card": "^2.0.30",
+    "@nextui-org/image": "^2.0.28",
     "@nextui-org/progress": "^2.0.30",
     "@nextui-org/select": "^2.2.0",
     "@nextui-org/system": "^2.2.0",

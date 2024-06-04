@@ -75,7 +75,7 @@ export default function PaginationSummary({
           <div className="flex justify-between items-center">
             <div className="flex flex-col gap-y-2 pb-2">
               <span className="flex items-center gap-x-1 text-sm text-gray-400">
-                <FaTemperatureHigh /> Today's Feels Like Temperature
+                <FaTemperatureHigh /> Today&apos;s Feels Like Temperature
               </span>
               <>
                 <span className="font-semibold text-md">
@@ -221,7 +221,7 @@ export default function PaginationSummary({
                   {precipitation24[index] > 0 ? (
                     <>
                       <span className="font-semibold text-md">
-                        It's raining now. Possible to be continued until{" "}
+                        It&apos;s raining now. Possible to be continued until{" "}
                         {findRainingStopTime() !== undefined
                           ? new Date(`${hourly24[findRainingStopTime()!]}`)
                               .toLocaleTimeString("en-GB", {

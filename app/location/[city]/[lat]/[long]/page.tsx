@@ -4,7 +4,6 @@ import DailyInfo from "@/components/DailyInfo";
 import HourlyInfo from "@/components/HourlyInfo";
 import NewsArea from "@/components/NewsArea";
 import PaginationSummary from "@/components/PaginationSummary";
-import SidePanel from "@/components/SidePanel";
 import fetchAirQualityIndexQuery from "@/graphQL/fetchAirQualityIndexQuery";
 import fetchWeatherQuery from "@/graphQL/fetchWeatherQuery";
 import { CgCompressV } from "react-icons/cg";
@@ -95,149 +94,134 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
   const index = findTimeSpecificDataIndex();
 
   return (
-    <div className="flex flex-col bg-fixed max-w-screen  min-h-screen xl:flex-row xl:relative  ">
-      <div className="w-full xl:h-screen xl:fixed xl:left-0 xl:top-0 xl:w-[25%] xl:overflow-y-scroll">
-        <SidePanel result={result} city={city} lat={lat} long={long} />
-      </div>
-      <div
-        className="flex-1  p-5 ml-0 xl:p-10 xl:ml-[25%] xl:w-[75%] xl:h-screen xl:fixed  xl:overflow-y-scroll"
-        style={{ background: `var(--dark)` }}
-      >
-        <div className="min-h-screen text-gray-100">
-          <div className="flex flex-col min-h-screen">
-            {/* Weather Overview */}
-            <div className="flex-none">
-              <h2 className="text-2xl font-bold pt-5">Weather Overview</h2>
-              <p className="text-sm text-gray-400">
-                Last Updated at:{" "}
-                {new Date(result?.current?.time).toLocaleString()}(
-                {result?.timezone})
-              </p>
-              <div className="m-2 mb-8">
-                {/* <CalloutCard message={gptSummary} /> */}
+    <div className="min-h-screen text-gray-100">
+      <div className="flex flex-col min-h-screen">
+        {/* Weather Overview */}
+        <div className="flex-none">
+          <h2 className="text-2xl font-bold pt-5">Weather Overview</h2>
+          <p className="text-sm text-gray-400">
+            Last Updated at: {new Date(result?.current?.time).toLocaleString()}(
+            {result?.timezone})
+          </p>
+          <div className="m-2 mb-8">
+            {/* <CalloutCard message={gptSummary} /> */}
+          </div>
+
+          {/* Summaries */}
+          <PaginationSummary result={result} aqiResult={aqiResult} />
+
+          {/* Stats */}
+          <div className="grid grid-cols-2 gap-3 m-1">
+            <CalloutCard>
+              <div className="flex flex-col gap-y-2  ">
+                <span className="flex items-center gap-x-1 text-sm text-gray-400">
+                  <TbUvIndex /> UV index
+                </span>
+                <div>
+                  <span className="font-semibold text-xl">
+                    {result?.daily.uv_index_max[0] <= 2
+                      ? "Low"
+                      : result?.daily.uv_index_max[0] <= 5
+                      ? "Moderate"
+                      : result?.daily.uv_index_max[0] <= 7
+                      ? "High"
+                      : result?.daily.uv_index_max[0] <= 10
+                      ? "Very High"
+                      : result?.daily.uv_index_max[0] > 10
+                      ? "Extreme"
+                      : ""}
+                  </span>
+                </div>
               </div>
-
-              {/* Summaries */}
-              <PaginationSummary result={result} aqiResult={aqiResult} />
-
-              {/* Stats */}
-              <div className="grid grid-cols-2 gap-3 m-1">
-                <CalloutCard>
-                  <div className="flex flex-col gap-y-2  ">
-                    <span className="flex items-center gap-x-1 text-sm text-gray-400">
-                      <TbUvIndex /> UV index
-                    </span>
-                    <>
-                      <span className="font-semibold text-xl">
-                        {result?.daily.uv_index_max[0] <= 2
-                          ? "Low"
-                          : result?.daily.uv_index_max[0] <= 5
-                          ? "Moderate"
-                          : result?.daily.uv_index_max[0] <= 7
-                          ? "High"
-                          : result?.daily.uv_index_max[0] <= 10
-                          ? "Very High"
-                          : result?.daily.uv_index_max[0] > 10
-                          ? "Extreme"
-                          : ""}
-                      </span>
-                    </>
-                  </div>
-                </CalloutCard>
-                <CalloutCard>
-                  <div className="flex flex-col gap-y-2  ">
-                    <span className="flex items-center gap-x-1 text-sm text-gray-400">
-                      <RiWaterPercentFill /> Humidity
-                    </span>
-                    <>
-                      <span className="font-semibold text-xl">
-                        {result?.current?.relative_humidity_2m} %
-                      </span>
-                    </>
-                  </div>
-                </CalloutCard>
-
-                <CalloutCard>
-                  <div className="flex flex-col gap-y-2  ">
-                    <span className="flex items-center gap-x-1 text-sm text-gray-400">
-                      <FaWind /> Wind
-                    </span>
-
-                    <div className="font-semibold text-xl flex items-center gap-x-2 ">
-                      <div
-                        className={`rotate-[${result.current.wind_direction_10m.toFixed(
-                          0
-                        )}deg]`}
-                      >
-                        <FaArrowUp />
-                      </div>
-                      {result?.current?.wind_speed_10m}{" "}
-                      {result?.current_units?.wind_speed_10m}
-                    </div>
-                  </div>
-                </CalloutCard>
-
-                <CalloutCard>
-                  <div className="flex flex-col gap-y-2  ">
-                    <span className="flex items-center gap-x-1 text-sm text-gray-400">
-                      <MdDewPoint /> Dew point
-                    </span>
-                    <>
-                      <span className="font-semibold text-xl">
-                        {result?.hourly.dew_point_2m[index]}{" "}
-                        {result.hourly_units.dew_point_2m}
-                      </span>
-                    </>
-                  </div>
-                </CalloutCard>
-                <CalloutCard>
-                  <div className="flex flex-col gap-y-2  ">
-                    <span className="flex items-center gap-x-1 text-sm text-gray-400">
-                      <CgCompressV /> Pressure
-                    </span>
-                    <>
-                      <span className="font-semibold text-xl">
-                        {result?.current?.surface_pressure}{" "}
-                        {result.current_units.surface_pressure}
-                      </span>
-                    </>
-                  </div>
-                </CalloutCard>
-                <CalloutCard>
-                  <div className="flex flex-col gap-y-2 ">
-                    <span className="flex items-center gap-x-1 text-sm text-gray-400">
-                      <MdVisibility /> Visibility
-                    </span>
-                    <>
-                      <span className="font-semibold text-xl">
-                        {(result?.hourly.visibility[index] / 1000).toFixed(1)}{" "}
-                        km
-                      </span>
-                    </>
-                  </div>
-                </CalloutCard>
+            </CalloutCard>
+            <CalloutCard>
+              <div className="flex flex-col gap-y-2  ">
+                <span className="flex items-center gap-x-1 text-sm text-gray-400">
+                  <RiWaterPercentFill /> Humidity
+                </span>
+                <div>
+                  <span className="font-semibold text-xl">
+                    {result?.current?.relative_humidity_2m} %
+                  </span>
+                </div>
               </div>
-            </div>
+            </CalloutCard>
 
-            {/* Hourly Info */}
-            <HourlyInfo
-              data={result.hourly}
-              utcOffsetSec={result.utc_offset_seconds}
-              timezone={result.timezone}
-              sunrise={result.daily.sunrise[0]}
-              sunset={result.daily.sunset[0]}
-            />
+            <CalloutCard>
+              <div className="flex flex-col gap-y-2  ">
+                <span className="flex items-center gap-x-1 text-sm text-gray-400">
+                  <FaWind /> Wind
+                </span>
 
-            {/* Daily Info */}
-            <DailyInfo data={result.daily} />
+                <div className="font-semibold text-xl flex items-center gap-x-2 ">
+                  <div
+                    className={`rotate-[${result.current.wind_direction_10m.toFixed(
+                      0
+                    )}deg]`}
+                  >
+                    <FaArrowUp />
+                  </div>
+                  {result?.current?.wind_speed_10m}{" "}
+                  {result?.current_units?.wind_speed_10m}
+                </div>
+              </div>
+            </CalloutCard>
 
-            {/* News  */}
-            <div className="flex-1 overflow-x-scroll">
-              <h1 className="text-2xl font-bold pb-5">Top News</h1>
-              <NewsArea />
-            </div>
+            <CalloutCard>
+              <div className="flex flex-col gap-y-2  ">
+                <span className="flex items-center gap-x-1 text-sm text-gray-400">
+                  <MdDewPoint /> Dew point
+                </span>
+                <div>
+                  <span className="font-semibold text-xl">
+                    {result?.hourly.dew_point_2m[index]}{" "}
+                    {result.hourly_units.dew_point_2m}
+                  </span>
+                </div>
+              </div>
+            </CalloutCard>
+            <CalloutCard>
+              <div className="flex flex-col gap-y-2  ">
+                <span className="flex items-center gap-x-1 text-sm text-gray-400">
+                  <CgCompressV /> Pressure
+                </span>
+                <>
+                  <span className="font-semibold text-xl">
+                    {result?.current?.surface_pressure}{" "}
+                    {result.current_units.surface_pressure}
+                  </span>
+                </>
+              </div>
+            </CalloutCard>
+            <CalloutCard>
+              <div className="flex flex-col gap-y-2 ">
+                <span className="flex items-center gap-x-1 text-sm text-gray-400">
+                  <MdVisibility /> Visibility
+                </span>
+                <>
+                  <span className="font-semibold text-xl">
+                    {(result?.hourly.visibility[index] / 1000).toFixed(1)} km
+                  </span>
+                </>
+              </div>
+            </CalloutCard>
           </div>
         </div>
+
+        {/* Hourly Info */}
+        <HourlyInfo
+          data={result.hourly}
+          utcOffsetSec={result.utc_offset_seconds}
+          timezone={result.timezone}
+          sunrise={result.daily.sunrise[0]}
+          sunset={result.daily.sunset[0]}
+        />
+
+        {/* Daily Info */}
+        <DailyInfo data={result.daily} />
+
+        {/* News  */}
+        <NewsArea />
       </div>
     </div>
   );

@@ -4,6 +4,9 @@ const nextConfig = {
     remotePatterns: [{
         protocol: 'https',
         hostname: 'www.weatherbit.io'
+      },{
+        protocol: 'https',
+        hostname: 'nextui.org'
       }]
   },
 };

@@ -21,11 +21,11 @@ function DailyInfo({ data }: { data: Daily }) {
           </div>
         </div>
         <hr className="h-px my-4 bg-zinc-700 border-0"></hr>
-        <div className="flex flex-col gap-y-2 items-center text-gray-100 text-lg xl:text-xl font-semibold">
+        <div className="flex flex-col gap-y-2 items-center text-gray-100 text-lg font-semibold">
           {time6.map((elem: string, index: number) => (
             <>
-              <div className="w-full grid grid-cols-5 ">
-                <div className="flex items-center  text-md col-span-1">
+              <div className="w-full grid grid-cols-12 ">
+                <div className="flex items-center justify-start text-md col-span-2">
                   <span className="shrink-0">
                     {new Date(elem).toLocaleString("en-GB", {
                       weekday: "short",
@@ -34,7 +34,10 @@ function DailyInfo({ data }: { data: Daily }) {
                     })}
                   </span>
                 </div>
-                <div className="flex items-center gap-x-1 justify-center shrink-0 font-normal">
+                <div className="font-normal flex justify-start items-center text-sm col-span-5">
+                  {weatherCodeToString[weather6[index]].description}
+                </div>
+                <div className="flex items-center  gap-x-1 justify-start shrink-0 font-normal col-span-2">
                   {precipitation6[index] < 20 ? (
                     <BsDroplet className="h-3 w-3" />
                   ) : precipitation6[index] < 60 ? (
@@ -44,11 +47,8 @@ function DailyInfo({ data }: { data: Daily }) {
                   )}
                   <span className="text-sm">{precipitation6[index]}%</span>
                 </div>
-                <div className="font-normal flex  items-center text-sm">
-                  {weatherCodeToString[weather6[index]].description}
-                </div>
 
-                <div className="flex items-center justify-center shrink-0 col-span-1 ">
+                <div className="flex items-center justify-start shrink-0 col-span-1 ">
                   <Image
                     src={`https://www.weatherbit.io/static/img/icons/${
                       weatherCodeToString[weather6[index]][`iconDay`]
@@ -60,7 +60,7 @@ function DailyInfo({ data }: { data: Daily }) {
                     quality={100}
                   />
                 </div>
-                <div className="flex  text-md gap-x-2 items-center justify-center  col-span-1">
+                <div className="flex  text-md gap-x-2 items-center justify-start  col-span-1">
                   <div className="shrink-0">
                     <span>{apparentTemp6[index].toFixed(0)} °</span>
                   </div>
