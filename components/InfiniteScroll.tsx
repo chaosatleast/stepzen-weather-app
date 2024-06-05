@@ -3,437 +3,70 @@ import React, { useEffect, useRef, useState, useTransition } from "react";
 import { motion, useAnimation, useInView } from "framer-motion";
 import { Card, CardHeader } from "@nextui-org/card";
 import { Image } from "@nextui-org/image";
+import fetchNewsQuery from "@/graphQL/fetchNewsQuery";
+import { getClient } from "@/apollo-client";
+import { FaImages } from "react-icons/fa6";
+import { timeAgo } from "@/helper/dateConversion";
+import { useRouter } from "next/navigation";
 
 function InfiniteScroll({
   country,
   category,
+  utcOffsetSeconds,
+  data,
+  pagination,
 }: {
   country: string;
   category: string;
+  utcOffsetSeconds: number;
+  data: News[];
+  pagination: NewsPagination;
 }) {
   const [offset, setOffset] = useState(0);
-  const [cellData, setCellData] = useState<News[]>([
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-    {
-      author: "TMZ Staff",
-      title: "Rafael Nadal Pulls Out Of U.S. Open Over COVID-19 Concerns",
-      description:
-        'Rafael Nadal is officially OUT of the U.S. Open ... the tennis legend said Tuesday it\'s just too damn unsafe for him to travel to America during the COVID-19 pandemic. "The situation is very complicated worldwide," Nadal wrote in a statement. "The…',
-      url: "https://www.tmz.com/2020/08/04/rafael-nadal-us-open-tennis-covid-19-concerns/",
-      source: "TMZ.com",
-      image:
-        "https://imagez.tmz.com/image/fa/4by3/2020/08/04/fad55ee236fc4033ba324e941bb8c8b7_md.jpg",
-      category: "general",
-      language: "en",
-      country: "us",
-      published_at: "2020-08-05T05:47:24+00:00",
-    },
-  ]);
+  const [cellData, setCellData] = useState<News[]>(data);
   const [isPending, startTransition] = useTransition();
   const newsRef = useRef(null);
   const loadingRef = useRef(null);
   const contentRef = useRef(null);
-
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const loadingInView = useInView(loadingRef, { once: true });
   const newsInView = useInView(newsRef, { once: true });
+  const key = process.env.MEDIASTACK_API_KEY;
 
-  async function loadMoreResult() {}
+  async function loadMoreResult() {
+    setIsLoading(true);
+    const client = getClient();
+    const result = await client.query({
+      query: fetchNewsQuery,
+      variables: {
+        access_key: key,
+        categories: category,
+        countries: country,
+        limit: "20",
+        offset: `${offset + 20}`,
+        languages: "en",
+      },
+    });
+
+    if (result) {
+      console.log(result);
+
+      const news: News[] = result.data.newsQuery.data;
+      const pagination: NewsPagination = result.data.newsQuery.data;
+
+      startTransition(() => {
+        setOffset(offset + 20);
+        setCellData([...cellData, ...news]);
+      });
+    }
+    setIsLoading(false);
+  }
   useEffect(() => {
-    if (loadingRef) {
+    if (loadingInView && cellData.length <= 100) {
       loadMoreResult();
     }
-  }, [loadingRef]);
+  }, [loadingInView]);
 
   const container = {
     hidden: { opacity: 0 },
@@ -480,126 +113,6 @@ function InfiniteScroll({
         variants={container}
         ref={contentRef}
       >
-        <motion.div
-          className="flex flex-col h-80 w-full sm:w-72 hover:sm:w-[294px] xl:w-64 hover:xl:w-[260px] hover:h-[324px] overflow-hidden gap-x-2  bg-white/10 rounded-2xl  transition-all duration- relative group/news hover:cursor-pointer"
-          variants={item}
-          initial="hidden"
-          animate={controls}
-          ref={newsRef}
-        >
-          {/* Image */}
-          <Card className="col-span-12 sm:col-span-4  w-full shrink-0 relative h-[60%]">
-            <Image
-              removeWrapper
-              alt="Card background"
-              className="z-0 w-full h-full object-cover"
-              src="https://nextui.org/images/card-example-4.jpeg"
-            />
-            <CardHeader className="absolute   flex-col items-start from-black to-transparent  bg-gradient-to-b h-full ">
-              <p className="text-tiny text-white/60  font-bold">
-                Hurricane Hanna makes landfall around 5 p.m. on Saturday
-              </p>
-            </CardHeader>
-          </Card>
-          {/* Description */}
-          <div className="absolute top-[50%] h-full bg-black mt-1 space-y-1 flex flex-col  justify-start p-4">
-            <span className="text-gray-400 text-sm ">Author · 13hour ago</span>
-            <h4 className="text-white font-extralight text-sm group-hover/news:line-clamp-4 line-clamp-5">
-              Minim adipisicing est ea pariatur mollit qui aliqua laborum
-              aliquip sint cillum. Irure quis exercitation occaecat ad aute
-              culpa sit. Commodo nostrud sunt labore dolore veniam sint duis
-              nisi consectetur. Officia duis qui eiusmod ex culpa exercitation
-              aliqua nisi sunt do est nostrud. Non qui ad excepteur dolor id
-              voluptate proident cupidatat. Proident pariatur reprehenderit ea
-              magna aute ea eiusmod.
-            </h4>
-          </div>
-
-          {/* Read More */}
-          <div className="absolute bottom-0 group-hover/news:flex  bg-gray-300 group-news/hover:h-6 w-full text-zinc-900 hidden justify-center items-center text-center font-bold text-sm">
-            Read More
-          </div>
-        </motion.div>{" "}
-        <motion.div
-          className="flex flex-col h-80  sm:w-72 hover:sm:w-[294px] xl:w-64 hover:xl:w-[260px] hover:h-[324px] overflow-hidden gap-x-2  bg-white/10 rounded-2xl  transition-all duration- relative group/news hover:cursor-pointer"
-          variants={item}
-          initial="hidden"
-          animate={controls}
-          ref={newsRef}
-        >
-          {/* Image */}
-          <Card className="col-span-12 sm:col-span-4  w-full shrink-0 relative h-[60%]">
-            <Image
-              removeWrapper
-              alt="Card background"
-              className="z-0 w-full h-full object-cover"
-              src="https://nextui.org/images/card-example-4.jpeg"
-            />
-            <CardHeader className="absolute   flex-col items-start from-black to-transparent  bg-gradient-to-b h-full ">
-              <p className="text-tiny text-white/60  font-bold">
-                Hurricane Hanna makes landfall around 5 p.m. on Saturday
-              </p>
-            </CardHeader>
-          </Card>
-          {/* Description */}
-          <div className="absolute top-[50%] h-full bg-black mt-1 space-y-1 flex flex-col  justify-start p-4">
-            <span className="text-gray-400 text-sm ">Author · 13hour ago</span>
-            <h4 className="text-white font-extralight text-sm group-hover/news:line-clamp-4 line-clamp-5">
-              Minim adipisicing est ea pariatur mollit qui aliqua laborum
-              aliquip sint cillum. Irure quis exercitation occaecat ad aute
-              culpa sit. Commodo nostrud sunt labore dolore veniam sint duis
-              nisi consectetur. Officia duis qui eiusmod ex culpa exercitation
-              aliqua nisi sunt do est nostrud. Non qui ad excepteur dolor id
-              voluptate proident cupidatat. Proident pariatur reprehenderit ea
-              magna aute ea eiusmod.
-            </h4>
-          </div>
-
-          {/* Read More */}
-          <div className="absolute bottom-0 group-hover/news:flex  bg-gray-300 group-news/hover:h-6 w-full text-zinc-900 hidden justify-center items-center text-center font-bold text-sm">
-            Read More
-          </div>
-        </motion.div>{" "}
-        <motion.div
-          className="flex flex-col h-80  sm:w-72 hover:sm:w-[294px] xl:w-64 hover:xl:w-[260px] hover:h-[324px] overflow-hidden gap-x-2  bg-white/10 rounded-2xl  transition-all duration- relative group/news hover:cursor-pointer"
-          variants={item}
-          initial="hidden"
-          animate={controls}
-          ref={newsRef}
-        >
-          {/* Image */}
-          <Card className="col-span-12 sm:col-span-4  w-full shrink-0 relative h-[60%]">
-            <Image
-              removeWrapper
-              alt="Card background"
-              className="z-0 w-full h-full object-cover"
-              src="https://nextui.org/images/card-example-4.jpeg"
-            />
-            <CardHeader className="absolute   flex-col items-start from-black to-transparent  bg-gradient-to-b h-full ">
-              <p className="text-tiny text-white/60  font-bold">
-                Hurricane Hanna makes landfall around 5 p.m. on Saturday
-              </p>
-            </CardHeader>
-          </Card>
-          {/* Description */}
-          <div className="absolute top-[50%] h-full bg-black mt-1 space-y-1 flex flex-col  justify-start p-4">
-            <span className="text-gray-400 text-sm ">Author · 13hour ago</span>
-            <h4 className="text-white font-extralight text-sm group-hover/news:line-clamp-4 line-clamp-5">
-              Minim adipisicing est ea pariatur mollit qui aliqua laborum
-              aliquip sint cillum. Irure quis exercitation occaecat ad aute
-              culpa sit. Commodo nostrud sunt labore dolore veniam sint duis
-              nisi consectetur. Officia duis qui eiusmod ex culpa exercitation
-              aliqua nisi sunt do est nostrud. Non qui ad excepteur dolor id
-              voluptate proident cupidatat. Proident pariatur reprehenderit ea
-              magna aute ea eiusmod.
-            </h4>
-          </div>
-
-          {/* Read More */}
-          <div className="absolute bottom-0 group-hover/news:flex  bg-gray-300 group-news/hover:h-6 w-full text-zinc-900 hidden justify-center items-center text-center font-bold text-sm">
-            Read More
-          </div>
-        </motion.div>{" "}
         {cellData?.map((data: News, index: number) => {
           return (
             <>
@@ -612,36 +125,39 @@ function InfiniteScroll({
               >
                 {/* Image */}
                 <Card className="col-span-12 sm:col-span-4  w-full shrink-0 relative h-[60%]">
-                  <Image
-                    removeWrapper
-                    alt="Card background"
-                    className="z-0 w-full h-full object-cover"
-                    src="https://nextui.org/images/card-example-4.jpeg"
-                  />
+                  {data.image ? (
+                    <img
+                      // removeWrapper
+                      className="z-0 w-full h-full object-cover"
+                      src={data.image}
+                    />
+                  ) : (
+                    <div className="z-0 w-full h-full p-10 flex items-center justify-center text-gray-700 bg-[var(--dark)]">
+                      <FaImages className="h-full w-full" />
+                    </div>
+                  )}
                   <CardHeader className="absolute   flex-col items-start from-black to-transparent  bg-gradient-to-b h-full ">
                     <p className="text-tiny text-white/60  font-bold">
-                      Hurricane Hanna makes landfall around 5 p.m. on Saturday
+                      {data.title}
                     </p>
                   </CardHeader>
                 </Card>
                 {/* Description */}
-                <div className="absolute top-[50%] h-full bg-black mt-1 space-y-1 flex flex-col  justify-start p-4">
+                <div className="absolute top-[50%] h-full w-full bg-black mt-1 space-y-1 flex flex-col  justify-start p-4">
                   <span className="text-gray-400 text-sm ">
-                    Author · 13hour ago
+                    {data.author ? `${data.author} · ` : ``}
+                    {timeAgo(data.published_at, utcOffsetSeconds)}
                   </span>
-                  <h4 className="text-white font-extralight text-sm group-hover/news:line-clamp-4 line-clamp-5">
-                    Minim adipisicing est ea pariatur mollit qui aliqua laborum
-                    aliquip sint cillum. Irure quis exercitation occaecat ad
-                    aute culpa sit. Commodo nostrud sunt labore dolore veniam
-                    sint duis nisi consectetur. Officia duis qui eiusmod ex
-                    culpa exercitation aliqua nisi sunt do est nostrud. Non qui
-                    ad excepteur dolor id voluptate proident cupidatat. Proident
-                    pariatur reprehenderit ea magna aute ea eiusmod.
+                  <h4 className="text-white  font-extralight text-sm group-hover/news:line-clamp-4 line-clamp-5">
+                    {data.description}
                   </h4>
                 </div>
 
                 {/* Read More */}
-                <div className="absolute bottom-0 group-hover/news:flex  bg-gray-300 group-news/hover:h-6 w-full text-zinc-900 hidden justify-center items-center text-center font-bold text-sm">
+                <div
+                  className="absolute bottom-0 group-hover/news:flex  bg-gray-300 group-news/hover:h-6 w-full text-zinc-900 hidden justify-center items-center text-center font-bold text-sm"
+                  onClick={() => router.push(`$data.url}`)}
+                >
                   Read More
                 </div>
               </motion.div>{" "}
@@ -649,12 +165,22 @@ function InfiniteScroll({
           );
         })}
       </motion.div>
-      <div
-        className="h-16 mt-5 flex justify-center items-center"
-        ref={loadingRef}
-      >
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#183B7E]"></div>
-      </div>
+      {cellData.length <= 100 && cellData.length > 0 ? (
+        <>
+          {isLoading ? (
+            <div
+              className="h-16 mt-5 flex justify-center items-center"
+              ref={loadingRef}
+            >
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#183B7E]"></div>
+            </div>
+          ) : (
+            <></>
+          )}
+        </>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }

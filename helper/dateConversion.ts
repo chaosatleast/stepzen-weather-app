@@ -1,14 +1,48 @@
-export function convertDateToTimezone(date: Date, targetOffset: number) {
-  // 1. Get the UTC date
-  const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+export function timeAgo(givenDate: string, utc_offset_seconds: number) {
+  const adjusted = new Date(givenDate).valueOf() + utc_offset_seconds * 1000;
+  const seconds = Math.floor(
+    (Date.now() + utc_offset_seconds * 1000 - adjusted) / 1000
+  );
+  const interval = Math.floor(seconds / 31536000);
 
-  // 2. Calculate the difference between target and local timezone offset (in minutes)
-  const localOffset = date.getTimezoneOffset();
-  const timezoneDiff = targetOffset / 60 - localOffset; // Convert targetOffset to minutes
+  if (interval > 1) {
+    return interval + " years ago";
+  }
+  if (interval === 1) {
+    return interval + " year ago";
+  }
 
-  // 3. Apply the timezone difference to the UTC date (in milliseconds)
-  const convertedDate = new Date(utcDate.getTime() + timezoneDiff * 60000);
+  const months = Math.floor(seconds / 2628000);
+  if (months > 1) {
+    return months + " months ago";
+  }
+  if (months === 1) {
+    return months + " month ago";
+  }
 
-  // 4. Return the converted date (might not reflect the target timezone formatting)
-  return convertedDate;
+  const days = Math.floor(seconds / 86400);
+  if (days > 1) {
+    return days + " days ago";
+  }
+  if (days === 1) {
+    return days + " day ago";
+  }
+
+  const hours = Math.floor(seconds / 3600);
+  if (hours > 1) {
+    return hours + " hours ago";
+  }
+  if (hours === 1) {
+    return hours + " hour ago";
+  }
+
+  const minutes = Math.floor(seconds / 60);
+  if (minutes > 1) {
+    return minutes + " minutes ago";
+  }
+  if (minutes === 1) {
+    return minutes + " minute ago";
+  }
+
+  return "just now";
 }

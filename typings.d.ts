@@ -187,13 +187,20 @@ interface CurrentAQI {
 
 interface News {
   author: string;
-  title: string;
-  description: string;
-  url: string;
-  source: string;
-  image: string;
   category: string;
-  language: string;
   country: string;
+  description: string;
+  image: string;
+  language: string;
   published_at: string;
+  source: string;
+  title: string;
+  url: string;
+}
+
+interface NewsPagination {
+  count: Int;
+  limit: Int;
+  offset: Int;
+  total: Int;
 }

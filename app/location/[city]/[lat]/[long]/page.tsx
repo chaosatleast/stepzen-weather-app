@@ -5,12 +5,14 @@ import HourlyInfo from "@/components/HourlyInfo";
 import NewsArea from "@/components/NewsArea";
 import PaginationSummary from "@/components/PaginationSummary";
 import fetchAirQualityIndexQuery from "@/graphQL/fetchAirQualityIndexQuery";
+import fetchNewsQuery from "@/graphQL/fetchNewsQuery";
 import fetchWeatherQuery from "@/graphQL/fetchWeatherQuery";
 import { CgCompressV } from "react-icons/cg";
 import { FaArrowUp, FaWind } from "react-icons/fa";
 import { MdDewPoint, MdVisibility } from "react-icons/md";
 import { RiWaterPercentFill } from "react-icons/ri";
 import { TbUvIndex } from "react-icons/tb";
+
 type Props = {
   params: {
     city: string;
@@ -57,6 +59,23 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
   });
 
   const aqiResult: AirQualityIndex = aqiQuery;
+
+  const key = process.env.MEDIASTACK_API_KEY;
+  const { data } = await client.query({
+    query: fetchNewsQuery,
+    variables: {
+      access_key: key,
+      categories: "",
+      countries: "",
+      limit: "20",
+      offset: "0",
+      languages: "en",
+    },
+  });
+
+  const news: News[] = data.newsQuery.data;
+
+  console.log(news);
 
   // const gptData = cleanData(result, city);
 
@@ -221,7 +240,11 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
         <DailyInfo data={result.daily} />
 
         {/* News  */}
-        <NewsArea />
+        <NewsArea
+          data={news}
+          timezone={result.timezone}
+          utcOffsetSecond={result.utc_offset_seconds}
+        />
       </div>
     </div>
   );

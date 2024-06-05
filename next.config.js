@@ -7,7 +7,8 @@ const nextConfig = {
       },{
         protocol: 'https',
         hostname: 'nextui.org'
-      }]
+      },
+    ]
   },
 };
 
