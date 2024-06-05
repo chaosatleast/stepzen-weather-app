@@ -38,12 +38,23 @@ function CountryPicker() {
   };
 
   async function fetchCountriesOption() {
+    const splitPathname = pathname.split("/");
     if (countries.length == 0) {
       const data: Country[] = await getAllCountries<Country>();
       const filter: Country[] = data.filter(
         (country: Country) =>
           countryNewsSupported.indexOf(country.iso2.toLocaleLowerCase()) !== -1
       );
+      const foundCountry: Country[] = data.filter(
+        (country: Country) =>
+          countryNewsSupported.indexOf(
+            splitPathname[splitPathname.length - 2]
+          ) !== -1
+      );
+
+      if (foundCountry.length == 1) {
+        setCountry(foundCountry[0]);
+      }
 
       setCountries(filter);
     }

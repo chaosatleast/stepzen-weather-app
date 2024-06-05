@@ -45,18 +45,27 @@ async function News({ params: { city, lat, long, country, category } }: Props) {
 
   const news: News[] = data.newsQuery.data;
   const pagination: NewsPagination = data.newsQuery.data;
+  console.log(news);
 
-  return (
-    <>
-      <InfiniteScroll
-        country={country}
-        category={category}
-        utcOffsetSeconds={aqiResult.utc_offset_seconds}
-        data={news}
-        pagination={pagination}
-      />
-    </>
-  );
+  if (news.length > 0) {
+    return (
+      <>
+        <InfiniteScroll
+          country={country}
+          category={category}
+          utcOffsetSeconds={aqiResult.utc_offset_seconds}
+          data={news}
+          pagination={pagination}
+        />
+      </>
+    );
+  } else {
+    return (
+      <div className="flex items-center justify-center text-xl text-gray-500">
+        No live news at the moment.
+      </div>
+    );
+  }
 }
 
 export default News;

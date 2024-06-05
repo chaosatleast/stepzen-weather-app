@@ -7,7 +7,7 @@ function header({ country, category }: { country: string; category: string }) {
   return (
     <div className="pt-2 pb-8 z-10 sticky">
       {/* Header */}
-      <div className="flex justify-between">
+      <div className="flex flex-col space-y-3 xl:justify-between">
         {/* title */}
         <div className="  flex flex-col gap-y-1">
           <ReturnButton />
@@ -18,7 +18,9 @@ function header({ country, category }: { country: string; category: string }) {
             </span>
           </div>
         </div>
-        <CountryPicker />
+        <div className="w-[75%]">
+          <CountryPicker />
+        </div>
       </div>
       {/* Category */}
       <NewsCategories />

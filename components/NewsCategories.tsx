@@ -1,6 +1,6 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 const categories = [
   "general",
@@ -65,6 +65,16 @@ function NewsCategories() {
       }/${category}`
     );
   };
+
+  const initalCategory = () => {
+    const splitPathname = pathname.split("/");
+
+    setActiveCategory(splitPathname[splitPathname.length - 1]);
+  };
+
+  useEffect(() => {
+    initalCategory();
+  }, []);
   return (
     <div className="relative text-gray-400 flex gap-x-6 mt-7 items-center justify-center ">
       <div className="md:hidden absolute left-0 hidden" ref={leftArrowRef}>
