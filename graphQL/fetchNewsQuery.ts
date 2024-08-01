@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-const fetchNewsQuery = gql`
+const fetchNewsQuery = `
   query MyQuery(
     $access_key: String
     $categories: String

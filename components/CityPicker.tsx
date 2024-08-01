@@ -1,41 +1,71 @@
 "use client";
+import { useCityPickerStore } from "@/utils/stores/cityPickerSrore";
+import { Autocomplete, AutocompleteItem } from "@nextui-org/autocomplete";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { useCityPickerStore } from "@/utils/stores/cityPickerSrore";
-import { createClient } from "@/utils/superbase/client";
-import { Autocomplete, AutocompleteItem } from "@nextui-org/autocomplete";
+
+const getAbsoluteURL = (endpoint: string) => {
+  if (process.env.NODE_ENV === "development") {
+    return `http://localhost:3000${endpoint}`;
+  } else {
+    return `https://next-weathernews.vercel.app${endpoint}`;
+  }
+};
 
 async function getAllCountries<T>() {
-  const supabase = createClient();
-  console.log(supabase);
-  const { data, error } = await supabase.from("countries").select();
-  console.log(data);
-  if (data) return data as T[];
-  else throw error;
+  const url = getAbsoluteURL("/api/options/countries");
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    console.log(data.countries.rows);
+
+    return data.countries.rows as T[];
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function getCountryState<T>(id: number) {
-  const supabase = createClient();
-  const { data, error } = await supabase
-    .from("states")
-    .select()
-    .eq("country_id", id);
-  console.log(data);
-  if (data) return data as T[];
-  else throw error;
+  const url = getAbsoluteURL(`/api/options/states?countryId=${id}`);
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    return data.states.rows as T[];
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function getStateCity<T>(sid: number, cid: number) {
-  const supabase = createClient();
+  const url = getAbsoluteURL(
+    `/api/options/cities?countryId=${cid}&stateId=${sid}`
+  );
 
-  const { data, error } = await supabase
-    .from("cities")
-    .select()
-    .eq("state_id", sid)
-    .eq("country_id", cid);
-  console.log(data);
-  if (data) return data as T[];
-  else throw error;
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    console.log(data);
+    return data.cities.rows as T[];
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 function CityPicker() {
@@ -50,14 +80,16 @@ function CityPicker() {
 
   async function fetchCountriesOption() {
     if (countries.length == 0) {
-      const data: Country[] = await getAllCountries<Country>();
+      const data: any = await getAllCountries<Country>();
+
+      console.log(data);
       setCountries(data);
     }
   }
 
   async function fetchStatesOption<T>() {
     if (country) {
-      const data: State[] = await getCountryState(country?.id);
+      const data: any = await getCountryState(country?.id);
       console.log(data);
       setStates(data);
       if (data.length == 0) {
@@ -71,7 +103,7 @@ function CityPicker() {
   }
   async function fetchCitiesOption() {
     if (country && state) {
-      const data: City[] = await getStateCity(state?.id, country.id);
+      const data: any = await getStateCity(state?.id, country.id);
       console.log(data);
       setCities(data);
       if (data.length == 0) {
@@ -88,9 +120,9 @@ function CityPicker() {
 
   useEffect(() => {
     fetchCountriesOption();
-    setCountry(null);
-    setCity(null);
-    setState(null);
+    // setCountry(null);
+    // setCity(null);
+    // setState(null);
   }, []);
 
   useEffect(() => {
@@ -153,7 +185,7 @@ function CityPicker() {
           }}
         >
           {countries &&
-            countries.map((country: Country) => (
+            countries?.map((country: Country) => (
               <AutocompleteItem key={country.id} textValue={country.name}>
                 <div className="flex items-center">
                   <span className="pr-1">{country.emoji}</span>

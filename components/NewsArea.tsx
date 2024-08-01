@@ -57,19 +57,21 @@ function NewsArea({
                     </div>
                   )}
                 </Card>
+
                 {/* Description */}
                 <div className="mt-1 space-y-1 flex flex-col justify-center">
                   <span className="text-gray-700 font-bold bg-gray-300 text-xs p-1 rounded-lg w-fit">
                     {item.category.charAt(0).toUpperCase() +
                       item.category.slice(1)}
                   </span>
+
                   <h4 className="text-white font-medium text-md line-clamp-1">
                     {item.title}
                   </h4>
                   <h4 className="text-white font-extralight text-xs line-clamp-2 ">
                     {item.description}
                   </h4>
-                  {}
+
                   <span className="text-gray-400 text-xs ">
                     {item.author ? `${item.author} · ` : ``}
                     {timeAgo(item.published_at, utcOffsetSecond)}

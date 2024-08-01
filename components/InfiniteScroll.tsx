@@ -8,6 +8,8 @@ import { getClient } from "@/apollo-client";
 import { FaImages } from "react-icons/fa6";
 import { timeAgo } from "@/helper/dateConversion";
 import { useRouter } from "next/navigation";
+import sortNews from "@/helper/sortNews";
+import infiniteFetch from "@/actions/infiniteFetch";
 
 function InfiniteScroll({
   country,
@@ -22,51 +24,37 @@ function InfiniteScroll({
   data: News[];
   pagination: NewsPagination;
 }) {
-  const [offset, setOffset] = useState(0);
+  const [offset, setOffset] = useState(pagination.offset);
   const [cellData, setCellData] = useState<News[]>(data);
-  const [isPending, startTransition] = useTransition();
+
+  const [isLoading, setIsLoading] = useState(false);
   const newsRef = useRef(null);
   const loadingRef = useRef(null);
   const contentRef = useRef(null);
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const loadingInView = useInView(loadingRef, { once: true });
+
+  const loadingInView = useInView(loadingRef);
   const newsInView = useInView(newsRef, { once: true });
   const key = process.env.MEDIASTACK_API_KEY;
 
-  async function loadMoreResult() {
+  const handleMoreNewsLoad = async () => {
     setIsLoading(true);
-    const client = getClient();
-    const result = await client.query({
-      query: fetchNewsQuery,
-      variables: {
-        access_key: key,
-        categories: category,
-        countries: country,
-        limit: "20",
-        offset: `${offset + 20}`,
-        languages: "en",
-      },
-    });
+    const { news, pagination } = await infiniteFetch(offset, category, country);
+    console.log(data);
+    const sorted = sortNews(news);
+    const paginate: NewsPagination = pagination;
 
-    if (result) {
-      console.log(result);
+    console.log(cellData);
 
-      const news: News[] = result.data.newsQuery.data;
-      const pagination: NewsPagination = result.data.newsQuery.data;
+    let newSort = sortNews([...cellData, ...sorted]);
+    console.log(newSort);
 
-      startTransition(() => {
-        setOffset(offset + 20);
-        setCellData([...cellData, ...news]);
-      });
-    }
-    setIsLoading(false);
-  }
-  useEffect(() => {
-    if (loadingInView && cellData.length <= 100) {
-      loadMoreResult();
-    }
-  }, [loadingInView]);
+    setTimeout(() => {
+      setIsLoading(false);
+      setOffset(paginate.offset);
+      setCellData(newSort);
+    }, 1000);
+  };
 
   const container = {
     hidden: { opacity: 0 },
@@ -165,22 +153,15 @@ function InfiniteScroll({
           );
         })}
       </motion.div>
-      {cellData.length <= 100 && cellData.length > 0 ? (
-        <>
-          {isLoading ? (
-            <div
-              className="h-16 mt-5 flex justify-center items-center"
-              ref={loadingRef}
-            >
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#183B7E]"></div>
-            </div>
-          ) : (
-            <></>
-          )}
-        </>
-      ) : (
-        <></>
-      )}
+      <motion.button
+        className="max-h-20 mx-10 mt-5 flex justify-center items-center"
+        viewport={{ once: true, margin: "0px" }}
+        onViewportEnter={handleMoreNewsLoad}
+      >
+        {isLoading && (
+          <div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-[#183B7E]"></div>
+        )}
+      </motion.button>
     </div>
   );
 }

@@ -12,6 +12,8 @@ import { FaArrowUp, FaWind } from "react-icons/fa";
 import { MdDewPoint, MdVisibility } from "react-icons/md";
 import { RiWaterPercentFill } from "react-icons/ri";
 import { TbUvIndex } from "react-icons/tb";
+import News from "./news/[country]/[category]/page";
+import sortNews, { NewsCategory, NewsLanguage } from "@/helper/sortNews";
 
 type Props = {
   params: {
@@ -60,38 +62,43 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
 
   const aqiResult: AirQualityIndex = aqiQuery;
 
-  const key = process.env.MEDIASTACK_API_KEY;
-  const { data } = await client.query({
-    query: fetchNewsQuery,
-    variables: {
-      access_key: key,
-      categories: "",
-      countries: "",
-      limit: "20",
-      offset: "0",
-      languages: "en",
-    },
-  });
+  if (!process.env.MEDIASTACK_API_KEY) {
+    throw new Error("MEDIASTACK_API_KEY is not set");
+  }
 
-  const news: News[] = data.newsQuery.data;
+  if (!process.env.STEPZEN_API_KEY) {
+    throw new Error("STEPZEN_API_KEY is not set");
+  }
+
+  const response = await fetch(
+    "https://villadeleyva.stepzen.net/api/tinseled-butterfly/__graphql",
+    {
+      method: "POST",
+      cache: "default",
+      next: { revalidate: 300 },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `apikey ${process.env.STEPZEN_API_KEY}`,
+      },
+      body: JSON.stringify({
+        query: fetchNewsQuery,
+        variables: {
+          access_key: process.env.MEDIASTACK_API_KEY,
+          categories: Object.values(NewsCategory).join(", "),
+          countries: "",
+          limit: "50",
+          offset: "0",
+          languages: "en",
+        },
+      }),
+    }
+  );
+
+  const { data } = await response.json();
+
+  const news = sortNews(data.newsQuery.data);
 
   console.log(news);
-
-  // const gptData = cleanData(result, city);
-
-  // gpt response api
-
-  // const gptResponse = await fetch(`${getHostPath()}/api/getWeatherSummary`, {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify({ weatherData: gptData }),
-  // });
-
-  // const gptSummary = await gptResponse.json();
-
-  // const { content } = gptSummary;
 
   const hourly24 = result.hourly.time.slice(0, 24);
   const precipitation24 = result.hourly.precipitation.slice(0, 24);
