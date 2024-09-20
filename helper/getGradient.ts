@@ -25,7 +25,8 @@ export function getGradient(
 	console.log(`sunset: `, sunset);
 	console.log(`dailySunrise: `, dailySunrise);
 	console.log(`dailySunset: `, dailySunset);
-	console.log(`current:`, new Date().getTime());
+	console.log(`current:`, new Date().toISOString());
+	console.log(`current2:`, new Date());
 
 	console.log(current > sunriseEnd);
 	console.log(current < sunsetStart);
