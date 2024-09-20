@@ -1,6 +1,7 @@
 import { getClient } from "@/apollo-client";
 import CityPicker from "@/components/CityPicker";
 import fetchWeatherQuery from "@/graphQL/fetchWeatherQuery";
+import { getGradient } from "@/helper/getGradient";
 import weatherCodeToString from "@/helper/weatherCodeToIconAndStr";
 import { MoonIcon, SunIcon } from "@heroicons/react/solid";
 import Image from "next/image";
@@ -12,6 +13,7 @@ type Props = {
 		long: string;
 	};
 };
+
 async function SidePanel({ params: { city, lat, long } }: Props) {
 	const client = getClient();
 
@@ -36,42 +38,12 @@ async function SidePanel({ params: { city, lat, long } }: Props) {
 	console.log(result.hourly);
 	city = decodeURI(city).replaceAll("_", " ");
 
-	const determineBackgroundGradient = () => {
-		let current = new Date(new Date().toISOString()).getTime();
-		let sunset = new Date(result.daily.sunset[0]).valueOf();
-		let sunrise = new Date(result.daily.sunrise[0]).valueOf();
-
-		current = current + result.utc_offset_seconds * 1000;
-		sunrise = sunrise + result.utc_offset_seconds * 1000;
-		sunset = sunset + result.utc_offset_seconds * 1000;
-
-		const factor = 30;
-
-		const sunsetStart = sunset - Math.floor(factor * 60 * 1000);
-		const sunsetEnd = sunset + Math.floor(factor * 60 * 1000);
-
-		const sunriseStart = sunrise - Math.floor(factor * 60 * 1000);
-		const sunriseEnd = sunrise + Math.floor(factor * 60 * 1000);
-
-		if (current >= sunriseStart && current <= sunriseEnd) {
-			console.log("sunrise");
-			return `var(--sunrise-gradient)`;
-		} else if (current > sunriseEnd && current < sunsetStart) {
-			console.log("day");
-			return `var(--daytime-gradient)`;
-		} else if (current >= sunsetStart && current <= sunsetEnd) {
-			console.log("sunset");
-			return `var(--sunset-gradient)`;
-		} else if (current > sunsetEnd) {
-			console.log("night");
-			return `var(--nighttime-gradient)`;
-		} else {
-			return `var(--nighttime-gradient)`;
-		}
-	};
-
-	const gradient = determineBackgroundGradient();
-	console.log(gradient);
+	const gradient = getGradient(
+		result.utc_offset_seconds,
+		result.daily.sunrise[0],
+		result.daily.sunset[0]
+	);
+	console.log(`gradient: `, gradient);
 
 	return (
 		<div className="">
