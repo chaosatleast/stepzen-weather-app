@@ -41,7 +41,8 @@ async function SidePanel({ params: { city, lat, long } }: Props) {
 	const gradient = getGradient(
 		result.utc_offset_seconds,
 		result.daily.sunrise[0],
-		result.daily.sunset[0]
+		result.daily.sunset[0],
+		result.timezone
 	);
 	console.log(`gradient: `, gradient);
 

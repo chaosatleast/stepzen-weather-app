@@ -1,9 +1,19 @@
 export function getGradient(
 	utc_offset_seconds: number,
 	dailySunrise: string,
-	dailySunset: string
+	dailySunset: string,
+	timezone: string
 ) {
-	let current = new Date().getTime() + utc_offset_seconds * 1000;
+	let current =
+		new Date(
+			new Date().toLocaleTimeString("en-GB", {
+				hour: "numeric",
+				minute: "numeric",
+				hour12: true,
+				timeZone: timezone,
+			})
+		).getTime() +
+		utc_offset_seconds * 1000;
 	// Convert sunrise and sunset times with UTC offset applied
 	let sunrise = new Date(dailySunrise).getTime() + utc_offset_seconds * 1000;
 	let sunset = new Date(dailySunset).getTime() + utc_offset_seconds * 1000;
