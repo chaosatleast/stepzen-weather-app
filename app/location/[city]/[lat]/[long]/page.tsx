@@ -4,9 +4,9 @@ import DailyInfo from "@/components/DailyInfo";
 import HourlyInfo from "@/components/HourlyInfo";
 import NewsArea from "@/components/NewsArea";
 import PaginationSummary from "@/components/PaginationSummary";
-import fetchAirQualityIndexQuery from "@/graphQL/fetchAirQualityIndexQuery";
-import fetchNewsQuery from "@/graphQL/fetchNewsQuery";
-import fetchWeatherQuery from "@/graphQL/fetchWeatherQuery";
+import fetchAirQualityIndexQuery from "@/query/fetchAirQualityIndexQuery";
+import fetchNewsQuery from "@/query/fetchNewsQuery";
+import fetchWeatherQuery from "@/query/fetchWeatherQuery";
 import { CgCompressV } from "react-icons/cg";
 import { FaArrowUp, FaWind } from "react-icons/fa";
 import { MdDewPoint, MdVisibility } from "react-icons/md";
@@ -16,245 +16,251 @@ import News from "./news/[country]/[category]/page";
 import sortNews, { NewsCategory, NewsLanguage } from "@/helper/sortNews";
 
 type Props = {
-  params: {
-    city: string;
-    lat: string;
-    long: string;
-  };
+	params: {
+		city: string;
+		lat: string;
+		long: string;
+	};
 };
 
 export const revalidate = 60;
 
 async function WeatherPage({ params: { city, lat, long } }: Props) {
-  const client = getClient();
+	const client = getClient();
 
-  const {
-    data: { weatherQuery },
-  } = await client.query({
-    query: fetchWeatherQuery,
-    variables: {
-      current:
-        "temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,surface_pressure,wind_speed_10m,wind_direction_10m",
-      daily:
-        "weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,uv_index_max,uv_index_clear_sky_max,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max",
-      hourly:
-        "temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,snow_depth,weather_code,surface_pressure,visibility",
-      longitude: `${long}`,
-      latitude: `${lat}`,
-      timezone: "auto",
-    },
-  });
+	const {
+		data: { weatherQuery },
+	} = await client.query({
+		query: fetchWeatherQuery,
+		variables: {
+			current:
+				"temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,surface_pressure,wind_speed_10m,wind_direction_10m",
+			daily:
+				"weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,uv_index_max,uv_index_clear_sky_max,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max",
+			hourly:
+				"temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,snow_depth,weather_code,surface_pressure,visibility",
+			longitude: `${long}`,
+			latitude: `${lat}`,
+			timezone: "auto",
+		},
+	});
 
-  const result: Weather = weatherQuery;
-  console.log(result.hourly);
+	const result: Weather = weatherQuery;
+	console.log(result.hourly);
 
-  const {
-    data: { aqiQuery },
-  } = await client.query({
-    query: fetchAirQualityIndexQuery,
-    variables: {
-      current: "european_aqi,us_aqi,dust",
-      longitude: `${long}`,
-      latitude: `${lat}`,
-      timezone: "auto",
-    },
-  });
+	const {
+		data: { aqiQuery },
+	} = await client.query({
+		query: fetchAirQualityIndexQuery,
+		variables: {
+			current: "european_aqi,us_aqi,dust",
+			longitude: `${long}`,
+			latitude: `${lat}`,
+			timezone: "auto",
+		},
+	});
 
-  const aqiResult: AirQualityIndex = aqiQuery;
+	const aqiResult: AirQualityIndex = aqiQuery;
+	console.log(aqiQuery);
 
-  if (!process.env.MEDIASTACK_API_KEY) {
-    throw new Error("MEDIASTACK_API_KEY is not set");
-  }
+	if (!process.env.MEDIASTACK_API_KEY) {
+		throw new Error("MEDIASTACK_API_KEY is not set");
+	}
 
-  if (!process.env.STEPZEN_API_KEY) {
-    throw new Error("STEPZEN_API_KEY is not set");
-  }
+	if (!process.env.NODE_ENV) {
+		throw new Error("NODE_ENV is not set");
+	}
 
-  const response = await fetch(
-    "https://villadeleyva.stepzen.net/api/tinseled-butterfly/__graphql",
-    {
-      method: "POST",
-      cache: "default",
-      next: { revalidate: 300 },
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `apikey ${process.env.STEPZEN_API_KEY}`,
-      },
-      body: JSON.stringify({
-        query: fetchNewsQuery,
-        variables: {
-          access_key: process.env.MEDIASTACK_API_KEY,
-          categories: Object.values(NewsCategory).join(", "),
-          countries: "",
-          limit: "50",
-          offset: "0",
-          languages: "en",
-        },
-      }),
-    }
-  );
+	if (!process.env.VERCEL_URL) {
+		throw new Error("VERCEL_URL is not set");
+	}
+	const basePathForMediaStack =
+		process.env.NODE_ENV === "development"
+			? "http://localhost:3000/api/graphql"
+			: `https://${process.env.VERCEL_URL}/api/graphql`;
 
-  const { data } = await response.json();
+	const response = await fetch(basePathForMediaStack, {
+		method: "POST",
+		cache: "default",
+		next: { revalidate: 300 },
+		headers: {
+			"Content-Type": "application/json",
+			//   Authorization: `apikey ${process.env.STEPZEN_API_KEY}`,
+		},
+		body: JSON.stringify({
+			query: fetchNewsQuery,
+			variables: {
+				access_key: process.env.MEDIASTACK_API_KEY,
+				categories: Object.values(NewsCategory).join(", "),
+				countries: "",
+				limit: "50",
+				offset: "0",
+				languages: "en",
+			},
+		}),
+	});
 
-  const news = sortNews(data.newsQuery.data);
+	const { data } = await response.json();
 
-  console.log(news);
+	const news = sortNews(data.newsQuery.data);
 
-  const hourly24 = result.hourly.time.slice(0, 24);
-  const precipitation24 = result.hourly.precipitation.slice(0, 24);
+	console.log("data:", data);
 
-  const findTimeSpecificDataIndex = () => {
-    let current = new Date(result.current.time).valueOf();
-    current = current + result.utc_offset_seconds * 1000;
+	const hourly24 = result.hourly.time.slice(0, 24);
+	const precipitation24 = result.hourly.precipitation.slice(0, 24);
 
-    const item = hourly24.filter((elem: any) => {
-      let elemHr = new Date(elem).valueOf();
-      elemHr = elemHr + result.utc_offset_seconds * 1000;
+	const findTimeSpecificDataIndex = () => {
+		let current = new Date(result.current.time).valueOf();
+		current = current + result.utc_offset_seconds * 1000;
 
-      return current >= elemHr && elemHr <= current;
-    });
-    // last items is the nearest to current time
-    return item.length - 1;
-  };
+		const item = hourly24.filter((elem: any) => {
+			let elemHr = new Date(elem).valueOf();
+			elemHr = elemHr + result.utc_offset_seconds * 1000;
 
-  const index = findTimeSpecificDataIndex();
+			return current >= elemHr && elemHr <= current;
+		});
+		// last items is the nearest to current time
+		return item.length - 1;
+	};
 
-  return (
-    <div className="min-h-screen text-gray-100">
-      <div className="flex flex-col min-h-screen">
-        {/* Weather Overview */}
-        <div className="flex-none">
-          <h2 className="text-2xl font-bold pt-5">Weather Overview</h2>
-          <p className="text-sm text-gray-400">
-            Last Updated at: {new Date(result?.current?.time).toLocaleString()}(
-            {result?.timezone})
-          </p>
-          <div className="m-2 mb-8">
-            {/* <CalloutCard message={gptSummary} /> */}
-          </div>
+	const index = findTimeSpecificDataIndex();
 
-          {/* Summaries */}
-          <PaginationSummary result={result} aqiResult={aqiResult} />
+	return (
+		<div className="min-h-screen text-gray-100">
+			<div className="flex flex-col min-h-screen">
+				{/* Weather Overview */}
+				<div className="flex-none">
+					<h2 className="text-2xl font-bold pt-5">Weather Overview</h2>
+					<p className="text-sm text-gray-400">
+						Last Updated at: {new Date(result?.current?.time).toLocaleString()}(
+						{result?.timezone})
+					</p>
+					<div className="m-2 mb-8">
+						{/* <CalloutCard message={gptSummary} /> */}
+					</div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 gap-3 m-1">
-            <CalloutCard>
-              <div className="flex flex-col gap-y-2  ">
-                <span className="flex items-center gap-x-1 text-sm text-gray-400">
-                  <TbUvIndex /> UV index
-                </span>
-                <div>
-                  <span className="font-semibold text-xl">
-                    {result?.daily.uv_index_max[0] <= 2
-                      ? "Low"
-                      : result?.daily.uv_index_max[0] <= 5
-                      ? "Moderate"
-                      : result?.daily.uv_index_max[0] <= 7
-                      ? "High"
-                      : result?.daily.uv_index_max[0] <= 10
-                      ? "Very High"
-                      : result?.daily.uv_index_max[0] > 10
-                      ? "Extreme"
-                      : ""}
-                  </span>
-                </div>
-              </div>
-            </CalloutCard>
-            <CalloutCard>
-              <div className="flex flex-col gap-y-2  ">
-                <span className="flex items-center gap-x-1 text-sm text-gray-400">
-                  <RiWaterPercentFill /> Humidity
-                </span>
-                <div>
-                  <span className="font-semibold text-xl">
-                    {result?.current?.relative_humidity_2m} %
-                  </span>
-                </div>
-              </div>
-            </CalloutCard>
+					{/* Summaries */}
+					<PaginationSummary result={result} aqiResult={aqiResult} />
 
-            <CalloutCard>
-              <div className="flex flex-col gap-y-2  ">
-                <span className="flex items-center gap-x-1 text-sm text-gray-400">
-                  <FaWind /> Wind
-                </span>
+					{/* Stats */}
+					<div className="grid grid-cols-2 gap-3 m-1">
+						<CalloutCard>
+							<div className="flex flex-col gap-y-2  ">
+								<span className="flex items-center gap-x-1 text-sm text-gray-400">
+									<TbUvIndex /> UV index
+								</span>
+								<div>
+									<span className="font-semibold text-xl">
+										{result?.daily.uv_index_max[0] <= 2
+											? "Low"
+											: result?.daily.uv_index_max[0] <= 5
+											? "Moderate"
+											: result?.daily.uv_index_max[0] <= 7
+											? "High"
+											: result?.daily.uv_index_max[0] <= 10
+											? "Very High"
+											: result?.daily.uv_index_max[0] > 10
+											? "Extreme"
+											: ""}
+									</span>
+								</div>
+							</div>
+						</CalloutCard>
+						<CalloutCard>
+							<div className="flex flex-col gap-y-2  ">
+								<span className="flex items-center gap-x-1 text-sm text-gray-400">
+									<RiWaterPercentFill /> Humidity
+								</span>
+								<div>
+									<span className="font-semibold text-xl">
+										{result?.current?.relative_humidity_2m} %
+									</span>
+								</div>
+							</div>
+						</CalloutCard>
 
-                <div className="font-semibold text-xl flex items-center gap-x-2 ">
-                  <div
-                    className={`rotate-[${result.current.wind_direction_10m.toFixed(
-                      0
-                    )}deg]`}
-                  >
-                    <FaArrowUp />
-                  </div>
-                  {result?.current?.wind_speed_10m}{" "}
-                  {result?.current_units?.wind_speed_10m}
-                </div>
-              </div>
-            </CalloutCard>
+						<CalloutCard>
+							<div className="flex flex-col gap-y-2  ">
+								<span className="flex items-center gap-x-1 text-sm text-gray-400">
+									<FaWind /> Wind
+								</span>
 
-            <CalloutCard>
-              <div className="flex flex-col gap-y-2  ">
-                <span className="flex items-center gap-x-1 text-sm text-gray-400">
-                  <MdDewPoint /> Dew point
-                </span>
-                <div>
-                  <span className="font-semibold text-xl">
-                    {result?.hourly.dew_point_2m[index]}{" "}
-                    {result.hourly_units.dew_point_2m}
-                  </span>
-                </div>
-              </div>
-            </CalloutCard>
-            <CalloutCard>
-              <div className="flex flex-col gap-y-2  ">
-                <span className="flex items-center gap-x-1 text-sm text-gray-400">
-                  <CgCompressV /> Pressure
-                </span>
-                <>
-                  <span className="font-semibold text-xl">
-                    {result?.current?.surface_pressure}{" "}
-                    {result.current_units.surface_pressure}
-                  </span>
-                </>
-              </div>
-            </CalloutCard>
-            <CalloutCard>
-              <div className="flex flex-col gap-y-2 ">
-                <span className="flex items-center gap-x-1 text-sm text-gray-400">
-                  <MdVisibility /> Visibility
-                </span>
-                <>
-                  <span className="font-semibold text-xl">
-                    {(result?.hourly.visibility[index] / 1000).toFixed(1)} km
-                  </span>
-                </>
-              </div>
-            </CalloutCard>
-          </div>
-        </div>
+								<div className="font-semibold text-xl flex items-center gap-x-2 ">
+									<div
+										className={`rotate-[${result.current.wind_direction_10m.toFixed(
+											0
+										)}deg]`}
+									>
+										<FaArrowUp />
+									</div>
+									{result?.current?.wind_speed_10m}{" "}
+									{result?.current_units?.wind_speed_10m}
+								</div>
+							</div>
+						</CalloutCard>
 
-        {/* Hourly Info */}
-        <HourlyInfo
-          data={result.hourly}
-          utcOffsetSec={result.utc_offset_seconds}
-          timezone={result.timezone}
-          sunrise={result.daily.sunrise[0]}
-          sunset={result.daily.sunset[0]}
-        />
+						<CalloutCard>
+							<div className="flex flex-col gap-y-2  ">
+								<span className="flex items-center gap-x-1 text-sm text-gray-400">
+									<MdDewPoint /> Dew point
+								</span>
+								<div>
+									<span className="font-semibold text-xl">
+										{result?.hourly.dew_point_2m[index]}{" "}
+										{result.hourly_units.dew_point_2m}
+									</span>
+								</div>
+							</div>
+						</CalloutCard>
+						<CalloutCard>
+							<div className="flex flex-col gap-y-2  ">
+								<span className="flex items-center gap-x-1 text-sm text-gray-400">
+									<CgCompressV /> Pressure
+								</span>
+								<>
+									<span className="font-semibold text-xl">
+										{result?.current?.surface_pressure}{" "}
+										{result.current_units.surface_pressure}
+									</span>
+								</>
+							</div>
+						</CalloutCard>
+						<CalloutCard>
+							<div className="flex flex-col gap-y-2 ">
+								<span className="flex items-center gap-x-1 text-sm text-gray-400">
+									<MdVisibility /> Visibility
+								</span>
+								<>
+									<span className="font-semibold text-xl">
+										{(result?.hourly.visibility[index] / 1000).toFixed(1)} km
+									</span>
+								</>
+							</div>
+						</CalloutCard>
+					</div>
+				</div>
 
-        {/* Daily Info */}
-        <DailyInfo data={result.daily} />
+				{/* Hourly Info */}
+				<HourlyInfo
+					data={result.hourly}
+					utcOffsetSec={result.utc_offset_seconds}
+					timezone={result.timezone}
+					sunrise={result.daily.sunrise[0]}
+					sunset={result.daily.sunset[0]}
+				/>
 
-        {/* News  */}
-        <NewsArea
-          data={news}
-          timezone={result.timezone}
-          utcOffsetSecond={result.utc_offset_seconds}
-        />
-      </div>
-    </div>
-  );
+				{/* Daily Info */}
+				<DailyInfo data={result.daily} />
+
+				{/* News  */}
+				<NewsArea
+					data={news}
+					timezone={result.timezone}
+					utcOffsetSecond={result.utc_offset_seconds}
+				/>
+			</div>
+		</div>
+	);
 }
 
 export default WeatherPage;

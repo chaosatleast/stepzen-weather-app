@@ -1,20 +1,18 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
+import getHostPath from "./helper/getHostPath";
 
-const url = process.env.STEPZEN_API_URL;
+const url = getHostPath();
 
-const apikey = process.env.STEPZEN_API_KEY;
+// const apikey = process.env.STEPZEN_API_KEY;
 
-console.log(url, apikey);
+// console.log(url, apikey);
 
 export const getClient = () => {
-  const client = new ApolloClient({
-    uri: url,
-    cache: new InMemoryCache(),
-    headers: {
-      Authorization: `apikey ${apikey}`,
-    },
-  });
+	const client = new ApolloClient({
+		uri: url + "/api/graphql",
+		cache: new InMemoryCache(),
+	});
 
-  console.log(client);
-  return client;
+	console.log(client);
+	return client;
 };

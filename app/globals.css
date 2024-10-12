@@ -3,43 +3,43 @@
 @tailwind utilities;
 
 :root {
-  --sunset-gradient: linear-gradient(
-    135deg,
-    #8b6f9e 0%,
-    #a97c9e 32%,
-    #d1a7c6 59%,
-    #f2f2f2 100%
-  );
-  --sunrise-gradient: linear-gradient(
-    180deg,
-    #6d3580 0%,
-    #cc4165 32%,
-    #e4734f 59%,
-    #ffe26f 100%
-  );
-  --daytime-gradient: linear-gradient(
-    180deg,
-    #4a55a2 40%,
-    #7895cb 60%,
-    #a0bfe0 99%,
-    #c5dff8 100%
-  );
-  --nighttime-gradient: linear-gradient(
-    225deg,
-    #070f2b 30%,
-    #1b1a55 60%,
-    #535c91 90%,
-    #9290c3 100%
-  );
+	--sunset-gradient: linear-gradient(
+		135deg,
+		#8b6f9e 0%,
+		#a97c9e 32%,
+		#d1a7c6 59%,
+		#f2f2f2 100%
+	);
+	--sunrise-gradient: linear-gradient(
+		180deg,
+		#6d3580 0%,
+		#cc4165 32%,
+		#e4734f 59%,
+		#ffe26f 100%
+	);
+	--daytime-gradient: linear-gradient(
+		180deg,
+		#4a55a2 40%,
+		#7895cb 60%,
+		#a0bfe0 99%,
+		#c5dff8 100%
+	);
+	--nighttime-gradient: linear-gradient(
+		225deg,
+		#070f2b 30%,
+		#1b1a55 60%,
+		#535c91 90%,
+		#9290c3 100%
+	);
 
-  --default-gradient: linear-gradient(
-    135deg,
-    #e9f8f9 5%,
-    #c0eef2 10%,
-    #537fe7 40%,
-    #181823 90%
-  );
+	--default-gradient: linear-gradient(
+		135deg,
+		#e9f8f9 5%,
+		#c0eef2 10%,
+		#537fe7 40%,
+		#181823 90%
+	);
 
-  --dark: #121212;
-  --callout-gradient: #272829;
+	--dark: #121212;
+	--callout-gradient: #272829;
 }

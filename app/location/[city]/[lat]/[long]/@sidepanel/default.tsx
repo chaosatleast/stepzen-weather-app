@@ -1,6 +1,6 @@
 import { getClient } from "@/apollo-client";
 import CityPicker from "@/components/CityPicker";
-import fetchWeatherQuery from "@/graphQL/fetchWeatherQuery";
+import fetchWeatherQuery from "@/query/fetchWeatherQuery";
 import { getGradient } from "@/helper/getGradient";
 import weatherCodeToString from "@/helper/weatherCodeToIconAndStr";
 import { MoonIcon, SunIcon } from "@heroicons/react/solid";
