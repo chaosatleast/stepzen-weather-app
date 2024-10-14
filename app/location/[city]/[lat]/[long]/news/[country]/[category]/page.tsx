@@ -1,8 +1,8 @@
-import { createApolloClient } from "@/apollo-client";
+import { getClient } from "@/apollo-client";
 import InfiniteScroll from "@/components/InfiniteScroll";
+import sortNews from "@/helper/sortNews";
 import fetchAirQualityIndexQuery from "@/query/fetchAirQualityIndexQuery";
 import fetchNewsQuery from "@/query/fetchNewsQuery";
-import sortNews from "@/helper/sortNews";
 
 type Props = {
 	params: {
@@ -16,10 +16,9 @@ type Props = {
 async function News({ params: { city, lat, long, country, category } }: Props) {
 	console.log(lat, long, country, category);
 
-	const client = createApolloClient();
 	const {
 		data: { aqiQuery },
-	} = await client.query({
+	} = await getClient().query({
 		query: fetchAirQualityIndexQuery,
 		variables: {
 			current: "european_aqi,us_aqi,dust",
