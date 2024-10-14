@@ -1,15 +1,12 @@
 "use client";
-import React, { useEffect, useRef, useState, useTransition } from "react";
-import { motion, useAnimation, useInView } from "framer-motion";
-import { Card, CardHeader } from "@nextui-org/card";
-import { Image } from "@nextui-org/image";
-import fetchNewsQuery from "@/query/fetchNewsQuery";
-import { getClient } from "@/apollo-client";
-import { FaImages } from "react-icons/fa6";
-import { timeAgo } from "@/helper/dateConversion";
-import { useRouter } from "next/navigation";
-import sortNews from "@/helper/sortNews";
 import infiniteFetch from "@/actions/infiniteFetch";
+import { timeAgo } from "@/helper/dateConversion";
+import sortNews from "@/helper/sortNews";
+import { Card, CardHeader } from "@nextui-org/card";
+import { motion, useAnimation, useInView } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { FaImages } from "react-icons/fa6";
 
 function InfiniteScroll({
 	country,
