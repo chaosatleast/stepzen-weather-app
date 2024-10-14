@@ -39,9 +39,6 @@ async function News({ params: { city, lat, long, country, category } }: Props) {
 		throw new Error("NODE_ENV is not set");
 	}
 
-	if (!process.env.VERCEL_URL) {
-		throw new Error("VERCEL_URL is not set");
-	}
 	const basePathForMediaStack =
 		process.env.NODE_ENV === "development"
 			? "http://localhost:3000/api/graphql"

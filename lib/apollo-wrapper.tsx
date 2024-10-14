@@ -10,7 +10,6 @@ import {
 function makeClient() {
 	if (!process.env.NODE_ENV) throw new Error(`NODE_ENV is not set`);
 
-	if (!process.env.VERCEL_URL) throw new Error(` is not set`);
 	const url =
 		process.env.NODE_ENV === "development"
 			? "http://localhost:3000/api/graphql"
