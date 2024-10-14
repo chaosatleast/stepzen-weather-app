@@ -1,4 +1,4 @@
-import { createApolloClient, getClient } from "@/apollo-client";
+import { createApolloClient } from "@/apollo-client";
 import CalloutCard from "@/components/CalloutCard";
 import DailyInfo from "@/components/DailyInfo";
 import HourlyInfo from "@/components/HourlyInfo";
