@@ -1,4 +1,4 @@
-import { getClient } from "@/apollo-client";
+import { createApolloClient } from "@/apollo-client";
 import InfiniteScroll from "@/components/InfiniteScroll";
 import sortNews from "@/helper/sortNews";
 import fetchAirQualityIndexQuery from "@/query/fetchAirQualityIndexQuery";
@@ -18,7 +18,7 @@ async function News({ params: { city, lat, long, country, category } }: Props) {
 
 	const {
 		data: { aqiQuery },
-	} = await getClient().query({
+	} = await createApolloClient().query({
 		query: fetchAirQualityIndexQuery,
 		variables: {
 			current: "european_aqi,us_aqi,dust",
@@ -41,7 +41,7 @@ async function News({ params: { city, lat, long, country, category } }: Props) {
 	const basePathForMediaStack =
 		process.env.NODE_ENV === "development"
 			? "http://localhost:3000/api/graphql"
-			: `https://${process.env.VERCEL_URL}/api/graphql`;
+			: `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/graphql`;
 
 	const response = await fetch(basePathForMediaStack, {
 		method: "POST",

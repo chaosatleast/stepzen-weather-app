@@ -1,7 +1,8 @@
-import { getClient } from "@/apollo-client";
+import { createApolloClient } from "@/apollo-client";
 import CalloutCard from "@/components/CalloutCard";
 import DailyInfo from "@/components/DailyInfo";
 import HourlyInfo from "@/components/HourlyInfo";
+import PaginationSummary from "@/components/PaginationSummary";
 import fetchWeatherQuery from "@/query/fetchWeatherQuery";
 import { CgCompressV } from "react-icons/cg";
 import { FaArrowUp, FaWind } from "react-icons/fa";
@@ -22,7 +23,7 @@ export const revalidate = 60;
 async function WeatherPage({ params: { city, lat, long } }: Props) {
 	const {
 		data: { weatherQuery },
-	} = await getClient().query({
+	} = await createApolloClient().query({
 		query: fetchWeatherQuery,
 		variables: {
 			current:
@@ -40,20 +41,20 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
 	const result: Weather = weatherQuery;
 	console.log(result.hourly);
 
-	// const {
-	// 	data: { aqiQuery },
-	// } = await client.query({
-	// 	query: fetchAirQualityIndexQuery,
-	// 	variables: {
-	// 		current: "european_aqi,us_aqi,dust",
-	// 		longitude: `${long}`,
-	// 		latitude: `${lat}`,
-	// 		timezone: "auto",
-	// 	},
-	// });
+	const {
+		data: { aqiQuery },
+	} = await createApolloClient().query({
+		query: fetchAirQualityIndexQuery,
+		variables: {
+			current: "european_aqi,us_aqi,dust",
+			longitude: `${long}`,
+			latitude: `${lat}`,
+			timezone: "auto",
+		},
+	});
 
-	// const aqiResult: AirQualityIndex = aqiQuery;
-	// console.log(aqiQuery);
+	const aqiResult: AirQualityIndex = aqiQuery;
+	console.log(aqiQuery);
 
 	// if (!process.env.MEDIASTACK_API_KEY) {
 	// 	throw new Error("MEDIASTACK_API_KEY is not set");
@@ -63,13 +64,13 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
 	// 	throw new Error("NODE_ENV is not set");
 	// }
 
-	// if (!process.env.VERCEL_URL) {
-	// 	throw new Error("VERCEL_URL is not set");
+	// if (!process.env.NEXT_PUBLIC_VERCEL_URL) {
+	// 	throw new Error("NEXT_PUBLIC_VERCEL_URL is not set");
 	// }
 	// const basePathForMediaStack =
 	// 	process.env.NODE_ENV === "development"
 	// 		? "http://localhost:3000/api/graphql"
-	// 		: `https://${process.env.VERCEL_URL}/api/graphql`;
+	// 		: `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/graphql`;
 
 	// const response = await fetch(basePathForMediaStack, {
 	// 	method: "POST",
@@ -132,7 +133,7 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
 					</div>
 
 					{/* Summaries */}
-					{/* <PaginationSummary result={result} aqiResult={aqiResult} /> */}
+					<PaginationSummary result={result} aqiResult={aqiResult} />
 
 					{/* Stats */}
 					<div className="grid grid-cols-2 gap-3 m-1">
