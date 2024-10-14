@@ -1,37 +1,21 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
-import { createHmac } from "./helper/createHmac";
+import { HttpLink } from "@apollo/client";
+import {
+	registerApolloClient,
+	ApolloClient,
+	InMemoryCache,
+} from "@apollo/experimental-nextjs-app-support";
 import getHostPath from "./helper/getHostPath";
-const url = getHostPath();
 
-// const apikey = process.env.STEPZEN_API_KEY;
-
-// console.log(url, apikey);
-
-export const getClient = () => {
-	if (!process.env.API_JWT_PASS) {
-		throw new Error("API_JWT_PASS is not set");
-	}
-	if (!process.env.API_JWT_USER) {
-		throw new Error("API_JWT_USER is not set");
-	}
-
-	if (!process.env.API_JWT_TOKEN) {
-		throw new Error("API_JWT_USER is not set");
-	}
-
-	const textToEncrypt =
-		process.env.API_JWT_PASS + "|" + process.env.API_JWT_USER;
-
-	const hmac = createHmac(process.env.API_JWT_TOKEN, textToEncrypt);
-
-	const client = new ApolloClient({
-		uri: url + "/api/graphql",
+export const { getClient, query, PreloadQuery } = registerApolloClient(() => {
+	const url = getHostPath() + "/api/graphql";
+	return new ApolloClient({
 		cache: new InMemoryCache(),
-		headers: {
-			Authorization: `Bearer ${hmac}`,
-		},
+		link: new HttpLink({
+			// this needs to be an absolute url, as relative urls cannot be used in SSR
+			uri: url,
+			// you can disable result caching here if you want to
+			// (this does not work if you are rendering your page with `export const dynamic = "force-static"`)
+			// fetchOptions: { cache: "no-store" },
+		}),
 	});
-
-	console.log(client);
-	return client;
-};
+});

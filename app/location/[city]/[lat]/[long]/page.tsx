@@ -26,11 +26,9 @@ type Props = {
 export const revalidate = 60;
 
 async function WeatherPage({ params: { city, lat, long } }: Props) {
-	const client = getClient();
-
 	const {
 		data: { weatherQuery },
-	} = await client.query({
+	} = await getClient().query({
 		query: fetchWeatherQuery,
 		variables: {
 			current:
@@ -48,63 +46,63 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
 	const result: Weather = weatherQuery;
 	console.log(result.hourly);
 
-	const {
-		data: { aqiQuery },
-	} = await client.query({
-		query: fetchAirQualityIndexQuery,
-		variables: {
-			current: "european_aqi,us_aqi,dust",
-			longitude: `${long}`,
-			latitude: `${lat}`,
-			timezone: "auto",
-		},
-	});
+	// const {
+	// 	data: { aqiQuery },
+	// } = await client.query({
+	// 	query: fetchAirQualityIndexQuery,
+	// 	variables: {
+	// 		current: "european_aqi,us_aqi,dust",
+	// 		longitude: `${long}`,
+	// 		latitude: `${lat}`,
+	// 		timezone: "auto",
+	// 	},
+	// });
 
-	const aqiResult: AirQualityIndex = aqiQuery;
-	console.log(aqiQuery);
+	// const aqiResult: AirQualityIndex = aqiQuery;
+	// console.log(aqiQuery);
 
-	if (!process.env.MEDIASTACK_API_KEY) {
-		throw new Error("MEDIASTACK_API_KEY is not set");
-	}
+	// if (!process.env.MEDIASTACK_API_KEY) {
+	// 	throw new Error("MEDIASTACK_API_KEY is not set");
+	// }
 
-	if (!process.env.NODE_ENV) {
-		throw new Error("NODE_ENV is not set");
-	}
+	// if (!process.env.NODE_ENV) {
+	// 	throw new Error("NODE_ENV is not set");
+	// }
 
-	if (!process.env.VERCEL_URL) {
-		throw new Error("VERCEL_URL is not set");
-	}
-	const basePathForMediaStack =
-		process.env.NODE_ENV === "development"
-			? "http://localhost:3000/api/graphql"
-			: `https://${process.env.VERCEL_URL}/api/graphql`;
+	// if (!process.env.VERCEL_URL) {
+	// 	throw new Error("VERCEL_URL is not set");
+	// }
+	// const basePathForMediaStack =
+	// 	process.env.NODE_ENV === "development"
+	// 		? "http://localhost:3000/api/graphql"
+	// 		: `https://${process.env.VERCEL_URL}/api/graphql`;
 
-	const response = await fetch(basePathForMediaStack, {
-		method: "POST",
-		cache: "default",
-		next: { revalidate: 300 },
-		headers: {
-			"Content-Type": "application/json",
-			//   Authorization: `apikey ${process.env.STEPZEN_API_KEY}`,
-		},
-		body: JSON.stringify({
-			query: fetchNewsQuery,
-			variables: {
-				access_key: process.env.MEDIASTACK_API_KEY,
-				categories: Object.values(NewsCategory).join(", "),
-				countries: "",
-				limit: "50",
-				offset: "0",
-				languages: "en",
-			},
-		}),
-	});
+	// const response = await fetch(basePathForMediaStack, {
+	// 	method: "POST",
+	// 	cache: "default",
+	// 	next: { revalidate: 300 },
+	// 	headers: {
+	// 		"Content-Type": "application/json",
+	// 		//   Authorization: `apikey ${process.env.STEPZEN_API_KEY}`,
+	// 	},
+	// 	body: JSON.stringify({
+	// 		query: fetchNewsQuery,
+	// 		variables: {
+	// 			access_key: process.env.MEDIASTACK_API_KEY,
+	// 			categories: Object.values(NewsCategory).join(", "),
+	// 			countries: "",
+	// 			limit: "50",
+	// 			offset: "0",
+	// 			languages: "en",
+	// 		},
+	// 	}),
+	// });
 
-	const { data } = await response.json();
+	// const { data } = await response.json();
 
-	const news = sortNews(data.newsQuery.data);
+	// const news = sortNews(data.newsQuery.data);
 
-	console.log("data:", data);
+	// console.log("data:", data);
 
 	const hourly24 = result.hourly.time.slice(0, 24);
 	const precipitation24 = result.hourly.precipitation.slice(0, 24);
@@ -140,7 +138,7 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
 					</div>
 
 					{/* Summaries */}
-					<PaginationSummary result={result} aqiResult={aqiResult} />
+					{/* <PaginationSummary result={result} aqiResult={aqiResult} /> */}
 
 					{/* Stats */}
 					<div className="grid grid-cols-2 gap-3 m-1">
@@ -253,11 +251,11 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
 				<DailyInfo data={result.daily} />
 
 				{/* News  */}
-				<NewsArea
+				{/* <NewsArea
 					data={news}
 					timezone={result.timezone}
 					utcOffsetSecond={result.utc_offset_seconds}
-				/>
+				/> */}
 			</div>
 		</div>
 	);

@@ -1,12 +1,11 @@
 "use client";
+import { timeAgo } from "@/helper/dateConversion";
 import { Card, CardHeader } from "@nextui-org/card";
 import { usePathname, useRouter } from "next/navigation";
 import { FaImages } from "react-icons/fa6";
 import { IoMdArrowForward } from "react-icons/io";
 import { IoNewspaperOutline } from "react-icons/io5";
 import CalloutCard from "./CalloutCard";
-import dynamic from "next/dynamic";
-import { timeAgo } from "@/helper/dateConversion";
 
 function NewsArea({
 	data,
