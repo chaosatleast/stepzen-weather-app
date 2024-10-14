@@ -5,67 +5,48 @@ import { Autocomplete, AutocompleteItem } from "@nextui-org/autocomplete";
 import countryNewsSupported from "@/helper/supportedCountryNews";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
-
-async function getAllCountries<T>() {
-	const supabase = createClient();
-	console.log(supabase);
-	const { data, error } = await supabase.from("countries").select();
-	console.log(data);
-	if (data) return data as T[];
-	else throw error;
-}
+import { SourceCountry } from "@/lib/enum";
+import { getAllCountries } from "./CityPicker";
 
 function CountryPicker() {
-	const [country, setCountry] = useState<Country>();
+	const [country, setCountry] = useState<string>();
 	const [countries, setCountries] = useState<Country[]>([]);
+
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const router = useRouter();
 	const pathname = usePathname();
+
+	const splitPath = pathname.split("/news/");
 	const handleCountrySelection = (key: Key | null) => {
-		const found: Country[] = countries.filter(
-			(country: Country) => country.id == key
-		);
-		if (found[0]) {
-			setCountry(found[0]);
-			router.push(
-				`${
-					pathname.split("/news/")[0]
-				}/news/${found[0]?.iso2.toLocaleLowerCase()}/${
-					pathname.split("/news/")[1].split("/")[1]
-				}`
-			);
-		}
+		setCountry(key as string);
+		router.push(`${splitPath[0]}/news/${key}/${splitPath[1].split("/")[1]}`);
 	};
 
-	async function fetchCountriesOption() {
-		const splitPathname = pathname.split("/");
-		if (countries.length == 0) {
-			const data: Country[] = await getAllCountries<Country>();
-			const filter: Country[] = data.filter(
-				(country: Country) =>
-					countryNewsSupported.indexOf(country.iso2.toLocaleLowerCase()) !== -1
-			);
-			const foundCountry: Country[] = data.filter(
-				(country: Country) =>
-					countryNewsSupported.indexOf(
-						splitPathname[splitPathname.length - 2]
-					) !== -1
-			);
+	const countryCode = Object.keys(SourceCountry);
+	const countryName = Object.values(SourceCountry);
 
-			if (foundCountry.length == 1) {
-				setCountry(foundCountry[0]);
-			}
+	const defaultItems = countryCode.map((country, index) => ({
+		key: country,
+		text: countryName[index],
+	}));
 
-			setCountries(filter);
-		}
-	}
+	console.log(defaultItems);
+
 	useEffect(() => {
-		fetchCountriesOption();
+		async function fetchFlags() {
+			const data: any = await getAllCountries<Country>();
+			if (data) {
+				setCountries(data);
+			}
+		}
+		fetchFlags();
+		setCountry(splitPath[1].split("/")[0]);
 	}, []);
+
 	return (
 		<div>
 			{" "}
-			<div ref={containerRef} className="dark text-foreground z ">
+			<div ref={containerRef} className="dark text-foreground">
 				<Autocomplete
 					variant={"underlined"}
 					labelPlacement="inside"
@@ -73,22 +54,33 @@ function CountryPicker() {
 					onSelectionChange={handleCountrySelection}
 					size="md"
 					radius="sm"
-					inputValue={country?.name}
-					value={country?.id}
+					value={country}
 					popoverProps={{
 						portalContainer: containerRef.current as Element,
 					}}
-					defaultItems={countries}
+					defaultItems={defaultItems}
+					defaultInputValue={
+						defaultItems
+							.filter(
+								(c: any, index: any) => splitPath[1].split("/")[0] == c.key
+							)
+							.map((c: any) => c.text)[0]
+					}
 				>
-					{countries &&
-						countries.map((country: Country) => (
-							<AutocompleteItem key={country.id} textValue={country.name}>
-								<div className="flex items-center">
-									<span className="pr-1">{country.emoji}</span>
-									{country.name}
-								</div>
-							</AutocompleteItem>
-						))}
+					{defaultItems.map((country, index) => (
+						<AutocompleteItem key={country.key} textValue={country.text}>
+							<div className="flex items-center">
+								{/* <span className="pr-1">
+									{
+										countries
+											.filter((c, index) => country.key.toUpperCase() == c.iso2)
+											.map((c) => c.emoji)[0]
+									}
+								</span> */}
+								{country.text}
+							</div>
+						</AutocompleteItem>
+					))}
 				</Autocomplete>
 			</div>
 		</div>

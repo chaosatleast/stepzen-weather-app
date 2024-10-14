@@ -12,7 +12,7 @@ const getAbsoluteURL = (endpoint: string) => {
 	}
 };
 
-async function getAllCountries<T>() {
+export async function getAllCountries<T>() {
 	const url = getAbsoluteURL("/api/options/countries");
 	try {
 		const response = await fetch(url, {

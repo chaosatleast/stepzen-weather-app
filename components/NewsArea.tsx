@@ -22,10 +22,18 @@ function NewsArea({
 	return (
 		<div className="pt-5 m-1">
 			<CalloutCard>
-				<div className="text-blue-600">
+				<div className="text-blue-600 flex justify-between items-center">
 					<div className="flex gap-x-2 items-center w-fit">
 						<IoNewspaperOutline />
 						LIVE NEWS
+					</div>
+					<div
+						className="mt-2 flex items-center gap-x-1 text-sm text-gray-400 w-fit hover:border-b hover:border-gray-400 hover:cursor-pointer"
+						onClick={() => {
+							router.push(`${pathname}/news/us/general`);
+						}}
+					>
+						More news <IoMdArrowForward />
 					</div>
 				</div>
 				<hr className="h-px my-4 bg-zinc-700 border-0"></hr>
@@ -80,14 +88,6 @@ function NewsArea({
 							</div>
 						</>
 					))}
-				</div>
-				<div
-					className="mt-2 flex items-center gap-x-1 text-sm text-gray-400 w-fit hover:border-b hover:border-gray-400 hover:cursor-pointer"
-					onClick={() => {
-						router.push(`${pathname}/news/us/general`);
-					}}
-				>
-					More news <IoMdArrowForward />
 				</div>
 			</CalloutCard>
 		</div>

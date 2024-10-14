@@ -46,7 +46,7 @@ async function SidePanel({ params: { city, lat, long } }: Props) {
 	return (
 		<div className="">
 			<div
-				className="min-h-screen p-10 text-gray-100"
+				className=" h-full xl:min-h-screen p-10 text-gray-100"
 				style={{
 					background: gradient ?? `var(--dark)`,
 				}}

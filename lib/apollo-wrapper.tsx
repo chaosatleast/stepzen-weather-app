@@ -1,4 +1,5 @@
 "use client";
+import { createHmacApp } from "@/helper/createHmac";
 // ^ this file needs the "use client" pragma
 
 import { HttpLink } from "@apollo/client";
@@ -14,6 +15,7 @@ function makeClient() {
 		process.env.NODE_ENV === "development"
 			? "http://localhost:3000/api/graphql"
 			: `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/graphql`;
+
 	const httpLink = new HttpLink({
 		// this needs to be an absolute url, as relative urls cannot be used in SSR
 		uri: url,
@@ -24,6 +26,10 @@ function makeClient() {
 		// via the `context` property on the options passed as a second argument
 		// to an Apollo Client data fetching hook, e.g.:
 		// const { data } = useSuspenseQuery(MY_QUERY, { context: { fetchOptions: { cache: "force-cache" }}});
+		headers: {
+			"Content-Type": "application/json",
+			// Authorization: `Bearer ${hmac}`,
+		},
 	});
 
 	// use the `ApolloClient` from "@apollo/experimental-nextjs-app-support"

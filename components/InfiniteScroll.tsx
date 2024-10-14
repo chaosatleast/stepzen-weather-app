@@ -32,25 +32,28 @@ function InfiniteScroll({
 
 	const loadingInView = useInView(loadingRef);
 	const newsInView = useInView(newsRef, { once: true });
-	const key = process.env.MEDIASTACK_API_KEY;
 
 	const handleMoreNewsLoad = async () => {
 		setIsLoading(true);
 		const { news, pagination } = await infiniteFetch(offset, category, country);
-		console.log(data);
-		const sorted = sortNews(news);
-		const paginate: NewsPagination = pagination;
+		console.log(news);
+		if (news.length > 0) {
+			const sorted = sortNews(news);
+			const paginate: NewsPagination = pagination;
 
-		console.log(cellData);
+			console.log(cellData);
 
-		let newSort = sortNews([...cellData, ...sorted]);
-		console.log(newSort);
+			let newSort = sortNews([...cellData, ...sorted]);
+			console.log(newSort);
 
-		setTimeout(() => {
+			setTimeout(() => {
+				setIsLoading(false);
+				setOffset(paginate.offset);
+				setCellData(newSort);
+			}, 1000);
+		} else {
 			setIsLoading(false);
-			setOffset(paginate.offset);
-			setCellData(newSort);
-		}, 1000);
+		}
 	};
 
 	const container = {
@@ -102,7 +105,7 @@ function InfiniteScroll({
 					return (
 						<>
 							<motion.div
-								className="flex flex-col h-80  sm:w-72 hover:sm:w-[294px] xl:w-64 hover:xl:w-[260px] hover:h-[324px] overflow-hidden gap-x-2  bg-white/10 rounded-2xl  transition-all duration- relative group/news hover:cursor-pointer"
+								className="flex flex-col h-80  sm:w-72  xl:w-64  overflow-hidden gap-x-2  bg-white/10 rounded-2xl  transition-all duration- relative group/news hover:cursor-pointer"
 								variants={item}
 								initial="hidden"
 								animate={controls}

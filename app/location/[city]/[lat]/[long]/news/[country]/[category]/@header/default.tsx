@@ -18,7 +18,9 @@ function header({ country, category }: { country: string; category: string }) {
 						</span>
 					</div>
 				</div>
-				<div className="w-[75%]">{/* <CountryPicker /> */}</div>
+				<div className="w-[75%]">
+					<CountryPicker />
+				</div>
 			</div>
 			{/* Category */}
 			<NewsCategories />

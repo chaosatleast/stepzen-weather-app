@@ -3,18 +3,18 @@ import { gql } from "@apollo/client";
 export const typeDefs = gql`
 	type Current {
 		apparent_temperature: Float
-		interval: Int
+		interval: Float
 		is_day: Int
-		precipitation: Int
-		rain: Int
-		relative_humidity_2m: Int
-		showers: Int
-		snowfall: Int
+		precipitation: Float
+		rain: Float
+		relative_humidity_2m: Float
+		showers: Float
+		snowfall: Float
 		surface_pressure: Float
 		temperature_2m: Float
 		time: String
 		weather_code: Int
-		wind_direction_10m: Int
+		wind_direction_10m: Float
 		wind_speed_10m: Float
 	}
 
@@ -77,12 +77,12 @@ export const typeDefs = gql`
 		apparent_temperature: [Float]
 		dew_point_2m: [Float]
 		precipitation: [Float]
-		precipitation_probability: [Int]
+		precipitation_probability: [Float]
 		rain: [Float]
-		relative_humidity_2m: [Int]
+		relative_humidity_2m: [Float]
 		showers: [Float]
-		snow_depth: [Int]
-		snowfall: [Int]
+		snow_depth: [Float]
+		snowfall: [Float]
 		surface_pressure: [Float]
 		temperature_2m: [Float]
 		time: [String]

@@ -2,8 +2,12 @@ import { createApolloClient } from "@/apollo-client";
 import CalloutCard from "@/components/CalloutCard";
 import DailyInfo from "@/components/DailyInfo";
 import HourlyInfo from "@/components/HourlyInfo";
+import NewsArea from "@/components/NewsArea";
 import PaginationSummary from "@/components/PaginationSummary";
+import { createHmacApp } from "@/helper/createHmac";
+import sortNews, { NewsCategory } from "@/helper/sortNews";
 import fetchAirQualityIndexQuery from "@/query/fetchAirQualityIndexQuery";
+import fetchNewsQuery from "@/query/fetchNewsQuery";
 import fetchWeatherQuery from "@/query/fetchWeatherQuery";
 import { CgCompressV } from "react-icons/cg";
 import { FaArrowUp, FaWind } from "react-icons/fa";
@@ -11,6 +15,7 @@ import { MdDewPoint, MdVisibility } from "react-icons/md";
 import { RiWaterPercentFill } from "react-icons/ri";
 import { TbUvIndex } from "react-icons/tb";
 
+export const dynamic = "force-dynamic";
 type Props = {
 	params: {
 		city: string;
@@ -57,48 +62,52 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
 	const aqiResult: AirQualityIndex = aqiQuery;
 	console.log(aqiQuery);
 
-	// if (!process.env.MEDIASTACK_API_KEY) {
-	// 	throw new Error("MEDIASTACK_API_KEY is not set");
-	// }
+	if (!process.env.MEDIASTACK_API_KEY) {
+		throw new Error("MEDIASTACK_API_KEY is not set");
+	}
 
-	// if (!process.env.NODE_ENV) {
-	// 	throw new Error("NODE_ENV is not set");
-	// }
+	if (!process.env.NODE_ENV) {
+		throw new Error("NODE_ENV is not set");
+	}
 
-	// if (!process.env.NEXT_PUBLIC_VERCEL_URL) {
-	// 	throw new Error("NEXT_PUBLIC_VERCEL_URL is not set");
-	// }
-	// const basePathForMediaStack =
-	// 	process.env.NODE_ENV === "development"
-	// 		? "http://localhost:3000/api/graphql"
-	// 		: `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/graphql`;
+	if (!process.env.API_JWT_USER) throw new Error("API_JWT_USER is not set");
+	if (!process.env.API_JWT_PASS) throw new Error("API_JWT_PASS is not set");
+	if (!process.env.API_JWT_TOKEN) throw new Error("API_JWT_TOKEN is not set");
 
-	// const response = await fetch(basePathForMediaStack, {
-	// 	method: "POST",
-	// 	cache: "default",
-	// 	next: { revalidate: 300 },
-	// 	headers: {
-	// 		"Content-Type": "application/json",
-	// 		//   Authorization: `apikey ${process.env.STEPZEN_API_KEY}`,
-	// 	},
-	// 	body: JSON.stringify({
-	// 		query: fetchNewsQuery,
-	// 		variables: {
-	// 			access_key: process.env.MEDIASTACK_API_KEY,
-	// 			categories: Object.values(NewsCategory).join(", "),
-	// 			countries: "",
-	// 			limit: "50",
-	// 			offset: "0",
-	// 			languages: "en",
-	// 		},
-	// 	}),
-	// });
+	const textToEncrypt = `${process.env.API_JWT_USER}:${process.env.API_JWT_PASS}`;
 
-	// const { data } = await response.json();
+	const hmac = createHmacApp(process.env.API_JWT_TOKEN, textToEncrypt);
+	const basePathForMediaStack =
+		process.env.NODE_ENV === "development"
+			? "http://localhost:3000/api/graphql"
+			: `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/graphql`;
 
-	// const news = sortNews(data.newsQuery.data);
+	const response = await fetch(basePathForMediaStack, {
+		method: "POST",
+		// cache: "no-cache",
+		next: { revalidate: 300 },
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${hmac}`,
+		},
+		body: JSON.stringify({
+			query: fetchNewsQuery,
+			variables: {
+				access_key: process.env.MEDIASTACK_API_KEY,
+				categories: Object.values(NewsCategory).join(", "),
+				countries: "",
+				limit: "50",
+				offset: "0",
+				languages: "en",
+			},
+		}),
+	});
 
-	// console.log("data:", data);
+	const { data } = await response.json();
+
+	const news = sortNews(data.newsQuery.data);
+
+	console.log("data:", data);
 
 	const hourly24 = result.hourly.time.slice(0, 24);
 	const precipitation24 = result.hourly.precipitation.slice(0, 24);
@@ -247,11 +256,11 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
 				<DailyInfo data={result.daily} />
 
 				{/* News  */}
-				{/* <NewsArea
+				<NewsArea
 					data={news}
 					timezone={result.timezone}
 					utcOffsetSecond={result.utc_offset_seconds}
-				/> */}
+				/>
 			</div>
 		</div>
 	);
