@@ -63,13 +63,13 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
 	// 	throw new Error("NODE_ENV is not set");
 	// }
 
-	// if (!process.env.NEXT_PUBLIC_VERCEL_URL) {
-	// 	throw new Error("NEXT_PUBLIC_VERCEL_URL is not set");
+	// if (!process.env.VERCEL_URL) {
+	// 	throw new Error("VERCEL_URL is not set");
 	// }
 	// const basePathForMediaStack =
 	// 	process.env.NODE_ENV === "development"
 	// 		? "http://localhost:3000/api/graphql"
-	// 		: `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/graphql`;
+	// 		: `https://${process.env.VERCEL_URL}/api/graphql`;
 
 	// const response = await fetch(basePathForMediaStack, {
 	// 	method: "POST",
