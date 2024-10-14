@@ -1,4 +1,4 @@
-import { createApolloClient, getClient } from "@/apollo-client";
+import { createApolloClient } from "@/apollo-client";
 import CityPicker from "@/components/CityPicker";
 import fetchWeatherQuery from "@/query/fetchWeatherQuery";
 import { getGradient } from "@/helper/getGradient";
