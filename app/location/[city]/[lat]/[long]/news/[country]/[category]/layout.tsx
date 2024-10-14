@@ -1,5 +1,3 @@
-import { ApolloWrapper } from "@/lib/apollo-wrapper";
-
 export default function RootLayout({
 	children,
 	header,
@@ -9,12 +7,10 @@ export default function RootLayout({
 }) {
 	return (
 		<section className="">
-			<ApolloWrapper>
-				<div className="flex flex-col">
-					{header}
-					{children}
-				</div>
-			</ApolloWrapper>
+			<div className="flex flex-col">
+				{header}
+				{children}
+			</div>
 		</section>
 	);
 }

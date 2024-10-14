@@ -1,11 +1,10 @@
 "use client";
-import getHostPath from "@/helper/getHostPath";
 // ^ this file needs the "use client" pragma
 
 import { HttpLink } from "@apollo/client";
 import {
-	ApolloNextAppProvider,
 	ApolloClient,
+	ApolloNextAppProvider,
 	InMemoryCache,
 } from "@apollo/experimental-nextjs-app-support";
 function makeClient() {
