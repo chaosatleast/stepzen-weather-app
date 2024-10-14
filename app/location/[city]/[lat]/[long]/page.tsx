@@ -3,6 +3,7 @@ import CalloutCard from "@/components/CalloutCard";
 import DailyInfo from "@/components/DailyInfo";
 import HourlyInfo from "@/components/HourlyInfo";
 import PaginationSummary from "@/components/PaginationSummary";
+import fetchAirQualityIndexQuery from "@/query/fetchAirQualityIndexQuery";
 import fetchWeatherQuery from "@/query/fetchWeatherQuery";
 import { CgCompressV } from "react-icons/cg";
 import { FaArrowUp, FaWind } from "react-icons/fa";
