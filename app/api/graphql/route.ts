@@ -2,16 +2,28 @@ import { resolvers } from "@/apollo-graphql/resolver";
 import { typeDefs } from "@/apollo-graphql/scheme";
 import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
+import { NextRequest } from "next/server";
 
+const corsOptions = {
+	origin: "http://localhost:3000",
+	credentials: true,
+};
 const server: any = new ApolloServer({
 	typeDefs,
 	resolvers,
 });
 
-const handler = startServerAndCreateNextHandler(server, {
-	context: async (req, res) => {
-		console.log("Your auth code is correct");
-		return { req, res };
+// const handler = startServerAndCreateNextHandler(server, {
+// 	context: async (req, res) => {
+// 		console.log("Your auth code is correct");
+// 		return { req, res };
+// 	},
+// });
+
+const handler = startServerAndCreateNextHandler<NextRequest>(server, {
+	context: async (req) => {
+		console.log(req);
+		return { req };
 	},
 });
 
