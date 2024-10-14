@@ -1,19 +1,13 @@
-import { createApolloClient, getClient } from "@/apollo-client";
+import { getClient } from "@/apollo-client";
 import CalloutCard from "@/components/CalloutCard";
 import DailyInfo from "@/components/DailyInfo";
 import HourlyInfo from "@/components/HourlyInfo";
-import NewsArea from "@/components/NewsArea";
-import PaginationSummary from "@/components/PaginationSummary";
-import fetchAirQualityIndexQuery from "@/query/fetchAirQualityIndexQuery";
-import fetchNewsQuery from "@/query/fetchNewsQuery";
 import fetchWeatherQuery from "@/query/fetchWeatherQuery";
 import { CgCompressV } from "react-icons/cg";
 import { FaArrowUp, FaWind } from "react-icons/fa";
 import { MdDewPoint, MdVisibility } from "react-icons/md";
 import { RiWaterPercentFill } from "react-icons/ri";
 import { TbUvIndex } from "react-icons/tb";
-import News from "./news/[country]/[category]/page";
-import sortNews, { NewsCategory, NewsLanguage } from "@/helper/sortNews";
 
 type Props = {
 	params: {
