@@ -8,10 +8,14 @@ import {
 	ApolloClient,
 	InMemoryCache,
 } from "@apollo/experimental-nextjs-app-support";
-
-const url = getHostPath() + "/api/graphql";
-// have a function to create a client for you
 function makeClient() {
+	if (!process.env.NODE_ENV) throw new Error(`NODE_ENV is not set`);
+
+	if (!process.env.VERCEL_URL) throw new Error(` is not set`);
+	const url =
+		process.env.NODE_ENV === "development"
+			? "http://localhost:3000/api/graphql"
+			: `https://${process.env.VERCEL_URL}/api/graphql`;
 	const httpLink = new HttpLink({
 		// this needs to be an absolute url, as relative urls cannot be used in SSR
 		uri: url,

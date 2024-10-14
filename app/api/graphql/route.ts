@@ -9,13 +9,6 @@ const server: any = new ApolloServer({
 	resolvers,
 });
 
-// const handler = startServerAndCreateNextHandler(server, {
-// 	context: async (req, res) => {
-// 		console.log("Your auth code is correct");
-// 		return { req, res };
-// 	},
-// });
-
 const handler = startServerAndCreateNextHandler<NextRequest>(server, {
 	context: async (req) => {
 		console.log(req);
