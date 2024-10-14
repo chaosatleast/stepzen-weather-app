@@ -16,12 +16,6 @@ const server: any = new ApolloServer({
 // 	},
 // });
 
-export const config = {
-	api: {
-		bodyParser: false,
-	},
-};
-
 const handler = startServerAndCreateNextHandler<NextRequest>(server, {
 	context: async (req) => {
 		console.log(req);
