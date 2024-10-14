@@ -1,0 +1,14 @@
+curl --request GET \
+  --header 'content-type: application/json' \
+  --url 'https://next-weathernews.vercel.app/api/graphql' \
+  --data '{"query":"query { 
+		weatherQuery {
+			current
+			daily
+			hourly
+			latitude
+			longitude
+			timezone
+		}
+  }
+  }'

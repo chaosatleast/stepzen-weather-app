@@ -1,4 +1,4 @@
-import { getClient } from "@/apollo-client";
+import { createApolloClient, getClient } from "@/apollo-client";
 import CityPicker from "@/components/CityPicker";
 import fetchWeatherQuery from "@/query/fetchWeatherQuery";
 import { getGradient } from "@/helper/getGradient";
@@ -15,7 +15,7 @@ type Props = {
 };
 
 async function SidePanel({ params: { city, lat, long } }: Props) {
-	const client = getClient();
+	const client = createApolloClient();
 
 	const {
 		data: { weatherQuery },

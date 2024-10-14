@@ -1,4 +1,4 @@
-import { getClient } from "@/apollo-client";
+import { createApolloClient, getClient } from "@/apollo-client";
 import CalloutCard from "@/components/CalloutCard";
 import DailyInfo from "@/components/DailyInfo";
 import HourlyInfo from "@/components/HourlyInfo";
@@ -28,7 +28,7 @@ export const revalidate = 60;
 async function WeatherPage({ params: { city, lat, long } }: Props) {
 	const {
 		data: { weatherQuery },
-	} = await getClient().query({
+	} = await createApolloClient().query({
 		query: fetchWeatherQuery,
 		variables: {
 			current:
