@@ -4,10 +4,6 @@ import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
 import { NextRequest } from "next/server";
 
-const corsOptions = {
-	origin: "http://localhost:3000",
-	credentials: true,
-};
 const server: any = new ApolloServer({
 	typeDefs,
 	resolvers,
@@ -19,6 +15,12 @@ const server: any = new ApolloServer({
 // 		return { req, res };
 // 	},
 // });
+
+export const config = {
+	api: {
+		bodyParser: false,
+	},
+};
 
 const handler = startServerAndCreateNextHandler<NextRequest>(server, {
 	context: async (req) => {

@@ -1,13 +1,18 @@
 import { HttpLink } from "@apollo/client";
 import {
-	registerApolloClient,
 	ApolloClient,
 	InMemoryCache,
+	registerApolloClient,
 } from "@apollo/experimental-nextjs-app-support";
-import getHostPath from "./helper/getHostPath";
 
 export const { getClient, query, PreloadQuery } = registerApolloClient(() => {
-	const url = getHostPath() + "/api/graphql";
+	if (!process.env.NODE_ENV) throw new Error(`NODE_ENV is not set`);
+
+	if (!process.env.VERCEL_URL) throw new Error(` is not set`);
+	const url =
+		process.env.NODE_ENV === "development"
+			? "http://localhost:3000/api/graphql"
+			: `https://${process.env.VERCEL_URL}/api/graphql`;
 	return new ApolloClient({
 		cache: new InMemoryCache(),
 		link: new HttpLink({
