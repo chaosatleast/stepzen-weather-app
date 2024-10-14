@@ -13,7 +13,7 @@ function makeClient() {
 	const url =
 		process.env.NODE_ENV === "development"
 			? "http://localhost:3000/api/graphql"
-			: `https://${process.env.VERCEL_URL}/api/graphql`;
+			: `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/graphql`;
 	const httpLink = new HttpLink({
 		// this needs to be an absolute url, as relative urls cannot be used in SSR
 		uri: url,
