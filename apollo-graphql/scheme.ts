@@ -39,11 +39,11 @@ export const typeDefs = gql`
 		apparent_temperature_max: [Float]
 		apparent_temperature_min: [Float]
 		precipitation_hours: [Int]
-		precipitation_probability_max: [Int]
+		precipitation_probability_max: [Float]
 		precipitation_sum: [Float]
 		rain_sum: [Float]
 		showers_sum: [Float]
-		snowfall_sum: [Int]
+		snowfall_sum: [Float]
 		sunrise: [String]
 		sunset: [String]
 		temperature_2m_max: [Float]
@@ -86,7 +86,7 @@ export const typeDefs = gql`
 		surface_pressure: [Float]
 		temperature_2m: [Float]
 		time: [String]
-		visibility: [Int]
+		visibility: [Float]
 		weather_code: [Int]
 	}
 
@@ -112,7 +112,7 @@ export const typeDefs = gql`
 		current_units: CurrentUnits
 		daily: Daily
 		daily_units: DailyUnits
-		elevation: Int
+		elevation: Float
 		generationtime_ms: Float
 		hourly: Hourly
 		hourly_units: HourlyUnits
@@ -120,15 +120,15 @@ export const typeDefs = gql`
 		longitude: Float
 		timezone: String
 		timezone_abbreviation: String
-		utc_offset_seconds: Int
+		utc_offset_seconds: Float
 	}
 
 	type CurrentAQI {
-		dust: Int
-		european_aqi: Int
-		interval: Int
+		dust: Float
+		european_aqi: Float
+		interval: Float
 		time: String
-		us_aqi: Int
+		us_aqi: Float
 	}
 
 	type CurrentUnitsAQI {
@@ -142,13 +142,13 @@ export const typeDefs = gql`
 	type RootAQI {
 		current: CurrentAQI
 		current_units: CurrentUnitsAQI
-		elevation: Int
+		elevation: Float
 		generationtime_ms: Float
 		latitude: Float
 		longitude: Float
 		timezone: String
 		timezone_abbreviation: String
-		utc_offset_seconds: Int
+		utc_offset_seconds: Float
 	}
 
 	type DataEntry {

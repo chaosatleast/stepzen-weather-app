@@ -39,16 +39,22 @@ async function SidePanel({ params: { city, lat, long } }: Props) {
 		result.utc_offset_seconds,
 		result.daily.sunrise[0],
 		result.daily.sunset[0],
-		result.timezone
+		result.timezone,
 	);
-	console.log(`gradient: `, gradient);
+	console.log(
+		`gradient: `,
+		result.utc_offset_seconds,
+		result.daily.sunrise[0],
+		result.daily.sunset[0],
+		result.timezone,
+	);
 
 	return (
 		<div className="">
 			<div
 				className=" h-full xl:min-h-screen p-10 text-gray-100"
 				style={{
-					background: gradient ?? `var(--dark)`,
+					background: gradient,
 				}}
 			>
 				<div className="pb-5 space-y-2">

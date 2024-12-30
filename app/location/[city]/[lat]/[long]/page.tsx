@@ -2,7 +2,7 @@ import { createApolloClient } from "@/apollo-client";
 import CalloutCard from "@/components/CalloutCard";
 import DailyInfo from "@/components/DailyInfo";
 import HourlyInfo from "@/components/HourlyInfo";
-import NewsArea from "@/components/NewsArea";
+
 import PaginationSummary from "@/components/PaginationSummary";
 import { createHmacApp } from "@/helper/createHmac";
 import sortNews, { NewsCategory } from "@/helper/sortNews";
@@ -14,8 +14,9 @@ import { FaArrowUp, FaWind } from "react-icons/fa";
 import { MdDewPoint, MdVisibility } from "react-icons/md";
 import { RiWaterPercentFill } from "react-icons/ri";
 import { TbUvIndex } from "react-icons/tb";
+import dynamic from "next/dynamic";
 
-export const dynamic = "force-dynamic";
+const NewsArea = dynamic(() => import("@/components/NewsArea"), { ssr: false });
 type Props = {
 	params: {
 		city: string;
@@ -143,7 +144,10 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
 					</div>
 
 					{/* Summaries */}
-					<PaginationSummary result={result} aqiResult={aqiResult} />
+					<PaginationSummary
+						result={result}
+						aqiResult={aqiResult}
+					/>
 
 					{/* Stats */}
 					<div className="grid grid-cols-2 gap-3 m-1">
@@ -191,7 +195,7 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
 								<div className="font-semibold text-xl flex items-center gap-x-2 ">
 									<div
 										className={`rotate-[${result.current.wind_direction_10m.toFixed(
-											0
+											0,
 										)}deg]`}
 									>
 										<FaArrowUp />

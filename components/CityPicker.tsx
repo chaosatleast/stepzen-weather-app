@@ -50,7 +50,7 @@ async function getCountryState<T>(id: number) {
 
 async function getStateCity<T>(sid: number, cid: number) {
 	const url = getAbsoluteURL(
-		`/api/options/cities?countryId=${cid}&stateId=${sid}`
+		`/api/options/cities?countryId=${cid}&stateId=${sid}`,
 	);
 
 	try {
@@ -72,6 +72,11 @@ function CityPicker() {
 	const [countries, setCountries] = useState<Country[]>([]);
 	const [states, setStates] = useState<State[]>([]);
 	const [cities, setCities] = useState<City[]>([]);
+
+	const [countryInput, setCountryInput] = useState<string>("");
+
+	const [citiesInput, setCitiesInput] = useState<string>("");
+	const [statesInput, setStatesInput] = useState<string>("");
 
 	const { country, state, city, setCountry, setCity, setState } =
 		useCityPickerStore();
@@ -96,7 +101,7 @@ function CityPicker() {
 				router.push(
 					`/location/${country.name.toLocaleLowerCase().replaceAll(" ", "_")}/${
 						country.latitude
-					}/${country.longitude}`
+					}/${country.longitude}`,
 				);
 			}
 		}
@@ -111,7 +116,7 @@ function CityPicker() {
 					router.push(
 						`/location/${state.name.toLocaleLowerCase().replaceAll(" ", "_")}/${
 							state.latitude
-						}/${state.longitude}`
+						}/${state.longitude}`,
 					);
 				}
 			}
@@ -134,8 +139,9 @@ function CityPicker() {
 	}, [country, state]);
 
 	const handleCountrySelection = (key: Key | null) => {
+		console.log("CountryKey", key);
 		const found: Country[] = countries.filter(
-			(country: Country) => country.id == key
+			(country: Country) => country.id == key,
 		);
 		if (found[0]) {
 			setCountry(found[0]);
@@ -157,7 +163,7 @@ function CityPicker() {
 				router.push(
 					`/location/${found[0].name
 						.toLocaleLowerCase()
-						.replaceAll(" ", "_")}/${found[0].latitude}/${found[0].longitude}`
+						.replaceAll(" ", "_")}/${found[0].latitude}/${found[0].longitude}`,
 				);
 			}
 		}
@@ -175,10 +181,13 @@ function CityPicker() {
 					label={<span className="text-white">Country</span>}
 					labelPlacement="outside"
 					placeholder="Select a country"
+					onInputChange={(value) => {
+						setCountryInput(value);
+					}}
 					onSelectionChange={handleCountrySelection}
 					size="md"
 					radius="sm"
-					inputValue={country?.name}
+					inputValue={countryInput}
 					value={country?.id}
 					popoverProps={{
 						portalContainer: containerRef.current as Element,
@@ -186,7 +195,10 @@ function CityPicker() {
 				>
 					{countries &&
 						countries?.map((country: Country) => (
-							<AutocompleteItem key={country.id} textValue={country.name}>
+							<AutocompleteItem
+								key={country.id}
+								textValue={country.name}
+							>
 								<div className="flex items-center">
 									<span className="pr-1">{country.emoji}</span>
 									{country.name}
@@ -196,7 +208,10 @@ function CityPicker() {
 				</Autocomplete>
 			</div>
 			{country && states.length > 0 && (
-				<div className="space-y-2 " ref={containerRef}>
+				<div
+					className="space-y-2 "
+					ref={containerRef}
+				>
 					<Autocomplete
 						label={<span className="text-white">State</span>}
 						labelPlacement="outside"
@@ -204,14 +219,20 @@ function CityPicker() {
 						onSelectionChange={handleStateSelection}
 						size="md"
 						radius="sm"
-						inputValue={state?.name}
+						inputValue={statesInput}
 						value={state?.id}
 						popoverProps={{
 							portalContainer: containerRef.current as Element,
 						}}
+						onInputChange={(value) => {
+							setStatesInput(value);
+						}}
 					>
 						{states.map((state: State) => (
-							<AutocompleteItem key={state.id} textValue={state.name}>
+							<AutocompleteItem
+								key={state.id}
+								textValue={state.name}
+							>
 								<div className="flex items-center">{state.name}</div>
 							</AutocompleteItem>
 						))}
@@ -220,7 +241,10 @@ function CityPicker() {
 			)}
 
 			{state && cities.length > 0 && (
-				<div className="space-y-2 " ref={containerRef}>
+				<div
+					className="space-y-2 "
+					ref={containerRef}
+				>
 					<Autocomplete
 						label={<span className="text-white">City</span>}
 						labelPlacement="outside"
@@ -228,14 +252,20 @@ function CityPicker() {
 						onSelectionChange={handleCitySelection}
 						size="md"
 						radius="sm"
-						inputValue={city?.name}
+						inputValue={citiesInput}
 						value={city?.id}
 						popoverProps={{
 							portalContainer: containerRef.current as Element,
 						}}
+						onInputChange={(value) => {
+							setCitiesInput(value);
+						}}
 					>
 						{cities.map((city: City) => (
-							<AutocompleteItem key={city.id} textValue={city.name}>
+							<AutocompleteItem
+								key={city.id}
+								textValue={city.name}
+							>
 								<div className="flex items-center">{city.name}</div>
 							</AutocompleteItem>
 						))}
