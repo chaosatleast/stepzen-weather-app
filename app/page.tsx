@@ -1,4 +1,5 @@
 import CityPicker from "@/components/CityPicker";
+import CountryPicker from "@/components/CountryPicker";
 
 export default async function Home() {
 	return (
