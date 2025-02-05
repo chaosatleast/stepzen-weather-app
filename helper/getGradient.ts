@@ -4,13 +4,9 @@ export function getGradient(
 	dailySunset: string,
 	timezone: string,
 ) {
+	console.log(`timezone: ${timezone}`);
 	// Correctly calculate the current timestamp with the timezone
-	const current = new Date(
-		new Date().toLocaleDateString("en-GB", {
-			timeZone: timezone,
-			dateStyle: "full",
-		}),
-	).getTime();
+	const current = Date.now() + +utc_offset_seconds * 1000;
 	// Convert sunrise and sunset to correct timestamps using UTC offset
 	const sunrise = new Date(dailySunrise).getTime() + utc_offset_seconds * 1000;
 	const sunset = new Date(dailySunset).getTime() + utc_offset_seconds * 1000;
@@ -31,15 +27,16 @@ export function getGradient(
 
 	// Determine the current period based on the time
 	if (current > sunriseStart && current < sunriseEnd) {
-		console.log("day");
+		console.log("gradient  sunrise");
 		return `var(--sunrise-gradient)`;
 	} else if (current < sunsetStart) {
-		console.log("day");
+		console.log("gradient  day");
 		return `var(--daytime-gradient)`;
 	} else if (current > sunsetStart && current < sunriseEnd) {
+		console.log("gradient  sunset");
 		return `var(--sunset-gradient)`;
 	} else {
-		console.log("night");
+		console.log("gradient night");
 		return `var(--nighttime-gradient)`;
 	}
 }
