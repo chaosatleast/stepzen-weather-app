@@ -6,8 +6,10 @@ export function getGradient(
 ) {
 	console.log(`timezone: ${timezone}`);
 	// Correctly calculate the current timestamp with the timezone
-	const serverTimestamp = new Date(Date.now()).getTime(); // UTC timestamp (milliseconds)
-	const current = serverTimestamp + utc_offset_seconds * 1000;
+	const currentTime = new Date().toLocaleString("en-GB", {
+		timeZone: timezone,
+	});
+	const current = new Date(currentTime).getTime();
 	// Convert sunrise and sunset to correct timestamps using UTC offset
 	const sunrise = new Date(dailySunrise).getTime() + utc_offset_seconds * 1000;
 	const sunset = new Date(dailySunset).getTime() + utc_offset_seconds * 1000;
