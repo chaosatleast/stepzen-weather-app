@@ -78,37 +78,37 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
 	const textToEncrypt = `${process.env.API_JWT_USER}:${process.env.API_JWT_PASS}`;
 
 	const hmac = createHmacApp(process.env.API_JWT_TOKEN, textToEncrypt);
-	// const basePathForMediaStack =
-	// 	process.env.NODE_ENV === "development"
-	// 		? "http://localhost:3000/api/graphql"
-	// 		: `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/graphql`;
+	const basePathForMediaStack =
+		process.env.NODE_ENV === "development"
+			? "http://localhost:3000/api/graphql"
+			: `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/graphql`;
 
-	// const response = await fetch(basePathForMediaStack, {
-	// 	method: "POST",
-	// 	// cache: "no-cache",
-	// 	next: { revalidate: 300 },
-	// 	headers: {
-	// 		"Content-Type": "application/json",
-	// 		Authorization: `Bearer ${hmac}`,
-	// 	},
-	// 	body: JSON.stringify({
-	// 		query: fetchNewsQuery,
-	// 		variables: {
-	// 			access_key: process.env.MEDIASTACK_API_KEY,
-	// 			categories: Object.values(NewsCategory).join(", "),
-	// 			countries: "",
-	// 			limit: "50",
-	// 			offset: "0",
-	// 			languages: "en",
-	// 		},
-	// 	}),
-	// });
+	const response = await fetch(basePathForMediaStack, {
+		method: "POST",
+		// cache: "no-cache",
+		next: { revalidate: 300 },
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${hmac}`,
+		},
+		body: JSON.stringify({
+			query: fetchNewsQuery,
+			variables: {
+				access_key: process.env.MEDIASTACK_API_KEY,
+				categories: Object.values(NewsCategory).join(", "),
+				countries: "",
+				limit: "50",
+				offset: "0",
+				languages: "en",
+			},
+		}),
+	});
 
-	// const { data } = await response.json();
+	const { data } = await response.json();
 
-	// const news = sortNews(data.newsQuery.data);
+	const news = sortNews(data.newsQuery.data);
 
-	// console.log("data:", data);
+	console.log("data:", data);
 
 	const hourly24 = result.hourly.time.slice(0, 24);
 	const precipitation24 = result.hourly.precipitation.slice(0, 24);
@@ -260,11 +260,11 @@ async function WeatherPage({ params: { city, lat, long } }: Props) {
 				<DailyInfo data={result.daily} />
 
 				{/* News  */}
-				{/* <NewsArea
+				<NewsArea
 					data={news}
 					timezone={result.timezone}
 					utcOffsetSecond={result.utc_offset_seconds}
-				/> */}
+				/>
 			</div>
 		</div>
 	);
